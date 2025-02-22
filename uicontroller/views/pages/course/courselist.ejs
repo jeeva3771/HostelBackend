@@ -1,0 +1,343 @@
+<%- include('../../partials/wardenuse/header.ejs', { appURL: appURL, title: 'Course list' }) %>
+<%- include('../../partials/wardenuse/nonloginlayout.ejs', { subTitle: 'Course list' }) %>
+<%- include('../../partials/breadcrumb.ejs', { breadCrumbs: breadCrumbs }) %>
+<%- include('../../partials/wardenuse/aside.ejs', { activeMenu: 'course' }) %>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="datatable-top mt-4">
+                        <div class="datatable-search d-flex justify-content-between align-items-center">
+                            <!-- Search and entries per page -->
+                            <div class="d-flex gap-2">
+                                <div class="datatable-search">
+                                    <input class="datatable-input" id="searchInput"
+                                        oninput="handleSearch()" placeholder="Search..." type="search"
+                                        name="search" title="Search within table">
+                                </div>
+                                <div class="datatable-dropdown">
+                                    <label>
+                                        <select class="datatable-selector cursor" name="per-page" id="limit"
+                                            onchange="changeLimit()">
+                                            <option value="5">5</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="15">15</option>
+                                            <option value="-1">All</option>
+                                        </select> entries per page
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end"><a href="<%=appURL%>course/add/"
+                                class="btn btn-primary">Add</a></div>
+                    </div>
+
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr>
+                            <tr>
+                                <th scope="col">Sno</th>
+                                <th scope="col">Course Name
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        fill="currentColor" class="bi bi-arrow-down-short sortIcon cursor"
+                                        viewBox="0 0 16 16" onclick="sortByColumn('courseName', 'DESC')">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        fill="currentColor" class="bi bi-arrow-up-short sortIcon cursor"
+                                        viewBox="0 0 16 16" onclick="sortByColumn('courseName', 'ASC')">
+                                        <path fill-rule="evenodd"
+                                            d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
+                                    </svg>
+                                </th>
+                                <th scope="col">Created By
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        fill="currentColor" class="bi bi-arrow-down-short sortIcon cursor"
+                                        viewBox="0 0 16 16" onclick="sortByColumn('createdBy', 'DESC')">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        fill="currentColor" class="bi bi-arrow-up-short sortIcon cursor"
+                                        viewBox="0 0 16 16" onclick="sortByColumn('createdBy', 'ASC')">
+                                        <path fill-rule="evenodd"
+                                            d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
+                                    </svg>
+                                </th>
+                                <th scope="col">Action</th>
+                            </tr>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesData">
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    <div class="spinner-border" role="status"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- End Table with stripped rows -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center cursor" id="pagination">
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main><!-- End #main -->
+<%- include('../../partials/wardenuse/footer.ejs') %>
+
+<script>
+    var tableDataDom = document.getElementById("coursesData");
+    var limitDom = document.getElementById("limit");
+    var paginationDom = document.getElementById("pagination");
+    var searchDom = document.getElementById("searchInput");
+    var orderIconDom = document.querySelectorAll('.sortIcon');
+    var columnSortOrders = {
+      courseName: 'ASC'
+    };
+
+    var currentColumn = 'createdAt';
+    var url = `&orderby=c.${currentColumn}&sort=DESC`;
+
+    function changeLimit() {
+        coursePage()
+    }
+
+    function handleSearch() {
+        coursePage();
+    }
+
+    function sortByColumn(column, sortOrder) {
+        columnSortOrders[column] = sortOrder;
+        currentColumn = column;
+        url = `&orderby=c.${currentColumn}&sort=${sortOrder}`;
+
+        orderIconDom.forEach(icon => {
+            icon.classList.remove('dark');
+        });
+
+        const clickedIcon = event.currentTarget;
+        clickedIcon.classList.add('dark');
+        coursePage();
+    }
+
+    function coursePage(pageNo = 1) {
+        var fetchUrl = `${getAppUrl('api/course')}?limit=${limitDom.value}&page=${pageNo}${url}`;
+
+        if (searchDom.value.length > 0) {
+            var searchText = searchDom.value.trim();
+            fetchUrl += `&search=${searchText}`;
+        }
+
+        var requestOptions = {
+            method: 'GET'
+        };
+
+        fetch(fetchUrl, requestOptions)
+            .then(async (response) => {
+                const responseData = await response.json();
+                const { courses, courseCount } = responseData;
+                let trHtml = '';
+
+                for (let i = 0; i < courses.length; i++) {
+                    const course = courses[i];
+                    trHtml += `
+                        <tr>
+                            <td>${(pageNo - 1) * limitDom.value + i + 1}</td>
+                            <td>${course.courseName}</td>
+                            <td>${course.createdFirstName}${course.createdLastName}</td>
+                            <td>   
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle mr-2 focus" viewBox="0 0 16 16" onClick="readCourseById(${course.courseId})">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                                </svg>
+                                <a href="${getAppUrl(`course/${course.courseId}`)}" class="dark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square mr-2 focus" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                </svg></a>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash focus" onClick="deleteCourseById(${course.courseId})" viewBox="0 0 16 16">
+                                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                </svg>
+                            </td>
+                        </tr>`;
+                }
+                tableDataDom.innerHTML = trHtml;
+                var totalPages = Math.ceil(responseData.courseCount / limitDom.value)
+                var paginationHtml = ''
+
+                if (totalPages === 0) {
+                    paginationHtml = '<h6>No results found.</h6>';
+                }
+
+                if (totalPages > 1) {
+                    paginationHtml += `
+                        <li class="page-item${pageNo === 1 ? ' disabled' : ''}">
+                            <a class="page-link" onclick="coursePage(${pageNo - 1})">Previous</a>
+                        </li>`;
+
+                    if (totalPages <= 3) {
+                        for (let i = 1; i <= totalPages; i++) {
+                            paginationHtml += `
+                                <li class="page-item${pageNo === i ? ' active' : ''}">
+                                    <a class="page-link" onclick="coursePage(${i})">${i}</a>
+                                </li>`;
+                        }
+                    } else {
+                        paginationHtml += `
+                            <li class="page-item${pageNo === 1 ? ' active' : ''}">
+                                <a class="page-link" onclick="coursePage(1)">1</a>
+                            </li>`;
+
+                        if (pageNo > 2) {
+                            paginationHtml += `
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>`;
+                        }
+
+                        const startPage = Math.max(2, pageNo - 1); 
+                        const endPage = Math.min(totalPages - 1, pageNo + 1);
+                        for (let i = startPage; i <= endPage; i++) {
+                            paginationHtml += `
+                                <li class="page-item${pageNo === i ? ' active' : ''}">
+                                    <a class="page-link" onclick="coursePage(${i})">${i}</a>
+                                </li>`;
+                        }
+
+                        if (pageNo < totalPages - 1) {
+                            paginationHtml += `
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>`;
+                        }
+
+                        paginationHtml += `
+                            <li class="page-item${pageNo === totalPages ? ' active' : ''}">
+                                <a class="page-link" onclick="coursePage(${totalPages})">${totalPages}</a>
+                            </li>`;
+                    }
+
+                    paginationHtml += `
+                        <li class="page-item${pageNo === totalPages ? ' disabled' : ''}">
+                            <a class="page-link" onclick="coursePage(${pageNo + 1})">Next</a>
+                        </li>`;
+                }
+                paginationDom.innerHTML = paginationHtml;
+        })
+            .catch((error) => alert('Something went wrong.Please try later.'));
+    }
+            
+    function readCourseById(courseId) {
+        var myHeaders = new Headers();
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders
+        };
+
+        fetch(getAppUrl(`api/course/${courseId}`), requestOptions)
+            .then(async (response) => {
+                const course = await response.json();
+
+                var existingModal = document.getElementById('courseModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                const modalHtml = `
+                    <div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Full Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <strong>Course Name</strong>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <strong> : </strong>${course.courseName}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <strong>Created At</strong>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <strong> : </strong>${course.createdTimeStamp}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <strong>Created By</strong>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <strong> : </strong>
+                                            ${capitalizeFirstLetter(course.createdFirstName)}${course.createdLastName}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <strong>updated At</strong>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <strong> : </strong>${course.updatedTimeStamp}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <strong>updated By</strong>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <strong> : </strong>
+                                            ${course.updatedFirstName !== null ? 
+                                            capitalizeFirstLetter(course.updatedFirstName) : '---'}${course.updatedLastName !== null ? 
+                                            course.updatedLastName : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+                    var modal = new bootstrap.Modal(document.getElementById('courseModal'));
+                    modal.show();
+                })
+            .catch(error => alert('Something went wrong.Please try later.'));
+    }
+
+    function deleteCourseById(courseId) {
+        var validateDelete = confirm('Are you sure you want to delete?')
+
+        if (!validateDelete)
+            return
+
+        var requestOptions = {
+            method: 'DELETE'
+        };
+
+        fetch(getAppUrl(`api/course/${courseId}`), requestOptions)
+            .then(async (response) => {
+                if (response.status === 200) {
+                    return window.location = getAppUrl('course')
+                }
+                    return alert(await response.text())
+                })
+            .catch(error => alert('Something went wrong.Please try later.'));
+    }
+
+    window.addEventListener('load', () => {
+        coursePage()
+    })
+
+</script>

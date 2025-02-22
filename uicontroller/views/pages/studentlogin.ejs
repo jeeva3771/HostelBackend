@@ -1,0 +1,158 @@
+<%- include('../partials/studentuse/header.ejs', { studentAppURL: studentAppURL, title: 'Student Login' }) %>
+
+<main>
+    <div class="container">
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+              <div class="d-flex justify-content-center py-4">
+                <a href="javascript:void(0)" class="logo d-flex align-items-center w-auto"> 
+                  <img src="<%=studentAppURL%>assets/img/logo.png" alt="">
+                  <span class="d-none d-lg-block">Hostel</span>
+                </a>
+              </div><!-- End Logo -->
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="pt-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Student Sign In</h5>
+                    <p class="text-center small"></p>
+                  </div>
+                  <div class="row g-3 needs-validation" novalidate>
+                    <div class="col-12" id="emailSection">
+                      <label for="email" class="form-label">Email</label>
+                      <div class="input-group has-validation">
+                        <input type="email" name="email" class="form-control" id="email" 
+                        onkeyup="toggleButton()" placeholder="Enter email" required>
+                        <div class="invalid-feedback" id="emailError"></div>
+                      </div>
+                    </div>
+                    <div class="col-12 text-center" id="otpSection">
+                        <button class="btn btn-primary" type="submit" id="sendOtp"
+                        onclick="generateOtp()" disabled>Generate OTP</button>
+                    </div>
+                    <div class="col-12" style="display: none;" id="otpText">
+                        <label for="otp" class="form-label">OTP</label>
+                        <input type="text" name="otp" class="form-control" id="otp"
+                            onkeyup="toggleButton()" placeholder="Enter OTP" required>
+                        <div class="invalid-feedback" id="otpError"></div>
+                    </div>
+                    <div class="col-12 text-center" style="display: none;" id="verifyOtp">
+                        <button type="button" class="btn btn-primary" id="submit"
+                            onclick="verifyStudentAuthentication()" disabled>
+                            Verify OTP & Login Report</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="credits">
+                Designed by <a href="https://www.linkedin.com/in/jeeva377">Jeeva|Linkedin</a>
+            </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+<script>
+    const emailDom = document.getElementById('email');
+    const emailSectionDom = document.getElementById('emailSection');
+    const otpSectionDom = document.getElementById('otpSection');
+    const otpTextDom = document.getElementById('otpText');
+    const verifyOtpDom = document.getElementById('verifyOtp');
+    const emailErrorDom = document.getElementById('emailError');
+    const otpDom = document.getElementById('otp');
+    const otpErrorDom = document.getElementById('otpError');
+    const sendOtpDom = document.getElementById('sendOtp');
+    const submitDom = document.getElementById('submit');
+
+    function generateOtp() {
+        sendOtpDom.disabled = true;
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "emailId": emailDom.value
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch(getStudentAppUrl('api/student/generateotp'), requestOptions)
+            .then(async (response) => {
+                if (response.status === 200) {
+                    emailSectionDom.style.display = 'none';
+                    otpSectionDom.style.display = 'none';
+                    otpTextDom.style.display = 'block';
+                    verifyOtpDom.style.display = 'block';
+                } else {
+                    emailErrorDom.innerText = await response.text();
+                    emailErrorDom.style.display = 'block';
+                    sendOtpDom.disabled = false;
+                }
+            })
+            .catch(error => {
+                alert('Something went wrong.Please try later.');
+                sendOtpDom.disabled = false;
+            })
+    }
+
+    function verifyStudentAuthentication() {
+        submitDom.disabled = true;
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "otp": otpDom.value
+        });
+
+        var requestOptions = {
+            method: 'PUT',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch(getStudentAppUrl('api/student/verifyotp/authentication'), requestOptions)
+            .then(async (response) => {
+                if (response.status === 200) {
+                    window.location = getStudentAppUrl('student/attendance/report')
+                } else if (response.status === 400) {
+                    const errorData = await response.json();
+                    if (errorData.errorType === 'OTP') {
+                        otpErrorDom.innerText = errorData.message;
+                        otpErrorDom.style.display = 'block';
+                    } 
+                    submitDom.disabled = false;
+                } else if ([401, 404].includes(response.status)) {
+                    const errorMessage = await response.text();
+                    alert(errorMessage)
+                    submitDom.disabled = false;
+                    window.location = getStudentAppUrl('student/emailverify/generateotp');
+                }
+            }) 
+            .catch(error => {
+                alert('Something went wrong.Please try later.');
+                submitDom.disabled = false;
+            });
+    }
+
+    function toggleButton() {
+        sendOtpDom.disabled = !(emailDom.value.length > 0)
+        submitDom.disabled = !(otpDom.value.length > 5)
+    }
+
+    function hideError(input, errorElement) {
+        input.addEventListener('input', function () {
+            errorElement.style.display = 'none';
+        });
+    }
+
+    hideError(emailDom, emailErrorDom);
+    hideError(otpDom, otpErrorDom);
+</script>

@@ -1,0 +1,26 @@
+<% 
+const mainMenu = [
+  { name: 'Dashboard', url: 'home/', icon: 'bi bi-grid' },
+  { name: 'Attendance', url: 'attendance/', icon: 'bi bi-card-checklist' },
+  { name: 'Student', url: 'student/', icon: 'bi bi-people' },
+  { name: 'Warden', url: 'warden/', icon: 'bi bi-person-fill' },
+  {
+    name: 'Structure',
+    icon: 'bi bi-layout-text-window-reverse',
+    children: [
+      { name: 'Block', url: 'block/' },
+      { name: 'Block floor', url: 'blockfloor/' },
+      { name: 'Room', url: 'room/' },
+    ],
+  },
+  {
+    name: 'Others',
+    icon: 'bi bi-grid-3x3-gap',
+    children: [
+      { name: 'Course', url: 'course/' },
+    ],
+  },
+  { name: 'User', url: 'warden/details/', icon: 'bi bi-person' },
+  { name: 'F.A.Q', url: 'faq/', icon: 'bi bi-question-circle' },
+  { name: 'Contact', url: 'contact/', icon: 'bi bi-envelope' },
+] %>

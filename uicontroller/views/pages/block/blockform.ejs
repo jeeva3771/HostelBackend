@@ -1,0 +1,146 @@
+<%- include('../../partials/wardenuse/header.ejs', { appURL: appURL, title: 'Block form' }) %>
+<%- include('../../partials/wardenuse/nonloginlayout.ejs', { subTitle: 'Block form' }) %>
+<%- include('../../partials/breadcrumb.ejs', { breadCrumbs: breadCrumbs }) %>
+<%- include('../../partials/wardenuse/aside.ejs', { activeMenu: 'block' }) %>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <form>
+                        <div class="row mb-3">
+                            <label for="blockCode" class="col-sm-2 col-form-label">
+                                Block Code<span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="blockCode">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="blockLocation" class="col-sm-2 col-form-label">
+                                Location<span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="blockLocation">
+                            </div>
+                        </div>
+                        <fieldset class="row mb-3">
+                            <legend class="col-form-label col-sm-2 pt-0">
+                                Status<span class="text-danger">*</span></legend>
+                            <div class="col-sm-10">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="isActive"
+                                        value="1">
+                                    <label class="form-check-label" for="isActive">Active</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="inActive"
+                                        value="0">
+                                    <label class="form-check-label" for="inActive">InActive</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="text-center">
+                            <button type="reset" class="btn btn-secondary" id="reset">Reset</button>
+                            <button type="button" onclick="saveOrUpdateBlock()" class="btn btn-primary"
+                                id="submitButton" disabled>Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</main>
+<%- include('../../partials/wardenuse/footer.ejs') %>
+
+<script>
+    var blockCodeDom = document.getElementById('blockCode');
+    var blockLocationDom = document.getElementById('blockLocation');
+    var isActiveDom = document.getElementById('isActive');
+    var inActiveDom = document.getElementById('inActive');
+    var resetDom = document.getElementById('reset');
+    var submitButtonDom = document.getElementById('submitButton');
+    var blockId = <%= blockId || 'null' %>;
+
+    function saveOrUpdateBlock() {
+        submitButtonDom.disabled = true;
+        const selectedStatusValue = getSelectedRadioValue('status');
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "blockCode": blockCodeDom.value.trim(),
+            "blockLocation": blockLocationDom.value,
+            "isActive": selectedStatusValue
+        });
+
+        var requestOptions = {
+            method: blockId ? 'PUT' : 'POST',
+            headers: myHeaders,
+            body: raw
+        };
+
+        let url = getAppUrl(`api/block${blockId ? `/${blockId}` : ''}`);
+        
+        fetch(url, requestOptions)
+            .then(async (response) => {
+                if ([200, 201].includes(response.status)) {
+                    window.location = getAppUrl('block');
+                } else {
+                    const responseText = await response.json();
+                    if (Array.isArray(responseText)) {
+                        alert(responseText[0]);
+                        submitButtonDom.disabled = false;
+                    } else {
+                        alert(responseText.error || responseText);
+                        submitButtonDom.disabled = false;
+                    }
+                }        
+            })
+            .catch(error =>  {
+                alert('Something went wrong.Please try later.')
+                submitButtonDom.disabled = false;
+            });
+    }
+
+    if (blockId) {
+        getBlock(blockId)
+        resetDom.style.display = 'none'
+    }
+
+    function getBlock(blockId) {
+        const requestOptions = {
+            method: "GET"
+        };
+
+        fetch(getAppUrl(`api/block/${blockId}`), requestOptions)
+            .then(async (response) => {
+                const block = await response.json()
+                blockCodeDom.value = block.blockCode
+                blockLocationDom.value = block.blockLocation
+            
+                if (block.isActive) {
+                    isActiveDom.checked = true;
+                } else {
+                    inActiveDom.checked = true;
+                }
+            })
+            .catch((error) =>  alert('Something went wrong.Please try later.'));
+    }
+
+    function toggleSubmitButton() {
+        const selectedStatusValue = getSelectedRadioValue('status');
+
+        submitButtonDom.disabled = !(
+            blockCodeDom.value.length > 0 &&
+            blockLocationDom.value.length > 0 &&
+            selectedStatusValue !== null)
+    }
+
+    blockCodeDom.addEventListener('input', toggleSubmitButton);
+    blockLocationDom.addEventListener('input', toggleSubmitButton);
+    document.querySelectorAll('input[name="status"]').forEach(radio => radio.addEventListener('change',
+    toggleSubmitButton));
+</script>

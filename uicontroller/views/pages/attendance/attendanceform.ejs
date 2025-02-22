@@ -1,0 +1,564 @@
+<%- include('../../partials/wardenuse/header.ejs', { appURL: appURL, title: 'Attendance' }) %>
+<%- include('../../partials/wardenuse/nonloginlayout.ejs', { subTitle: 'Attendance' }) %>
+<%- include('../../partials/breadcrumb.ejs', { breadCrumbs: breadCrumbs }) %>
+<%- include('../../partials/wardenuse/aside.ejs', { activeMenu: 'attendance' }) %>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                <div class="mt-3" id="back">
+                    <button onclick="backToView()" class="btn btn-outline-secondary btn-sm"
+                    id="backToView">Back</button>
+                </div>
+                    <div class="row justify-content-center">
+                        <div class="col-3 text-center mt-4">
+                            <div class="form-group">
+                                <label for="date" class="mb-2"><strong>Date</strong></label>
+                                <input type="date" class="form-control controlInputType" id="checkIn"
+                                    onchange="populateBlockCode()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container text-center mt-3">
+                        <div class="row justify-content-center" id="blockCodeContainer">
+                            <p><strong>Block</strong></p>
+                            <div class="col-12">
+                                <div class="row row-cols-6 g-3 justify-content-center" id="blockCode">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container text-center mt-3">
+                        <div class="row justify-content-center hidden" id="floorNumberContainer">
+                            <p><strong>Floor Number</strong></p>
+                            <div class="col-12 mx-auto">
+                                <div class="row row-cols-6 g-3 justify-content-center" id="floorNumber">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container text-center mt-3">
+                        <div class="row justify-content-center hidden" id="roomNumberContainer">
+                            <p><strong>Room Number</strong></p>
+                            <div class="col-12 mx-auto">
+                                <div class="row row-cols-6 g-3 justify-content-center" id="roomNumber">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row mb-3 align-items-center justify-content-center mt-4" 
+                        id="status">
+                        <b class="me-2">Attendance Taken :</b>
+                        <div class="p-2 smallBox mt-0 clr1"></div>
+                        <span class="ms-2">100%</span>
+
+                        <div class="p-2 smallBox mt-0 clr3 ms-3"></div>
+                        <span class="ms-2">Below-99%</span>
+
+                        <div class="p-2 smallBox mt-0 ms-3 rounded-0 border border-1 clr2"></div>
+                        <span class="ms-2">0%</span>
+
+                        <div class="p-2 smallBox mt-0 ms-3 rounded-0 border border-1 clr4"></div>
+                        <span class="ms-2">No Field</span>
+                    </div>
+                    <div class="container text-center">
+                        <div id="studentContainer" class="hidden">
+                            <p><strong>Students</strong></p>
+                            <div id="studentList" class="mb-4">
+                            </div>
+                            <button type="button" onclick="saveOrUpdateAttendance()" class="btn btn-primary"
+                                id="submitButton">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</main>
+
+<%- include('../../partials/wardenuse/footer.ejs') %>
+<script>
+    const urlParamsDom = new URLSearchParams(window.location.search);
+    const blockCodeContainerDom = document.getElementById('blockCodeContainer');
+    const blockCodeDom = document.getElementById('blockCode');
+    const floorNumberContainerDom = document.getElementById('floorNumberContainer');
+    const floorNumberDom = document.getElementById('floorNumber');
+    const roomNumberContainerDom = document.getElementById('roomNumberContainer');
+    const roomNumberDom = document.getElementById('roomNumber');
+    const checkInDom = document.getElementById('checkIn');
+    const studentContainerDom = document.getElementById('studentContainer');
+    const studentListDom = document.getElementById('studentList');
+    const statusDom = document.getElementById('status');
+    const backDom = document.getElementById('back');
+    const submitButtonDom = document.getElementById('submitButton');
+    const today = new Date().toISOString().split('T')[0];
+    checkInDom.value = today;
+    let currentBlockId = null;
+    let currentBlockFloorId = null;
+    let currentRoomId = null;
+
+    function convertToISO(checkIn) {
+        let [year, month, day] = checkIn.split('-');
+        day = day.replace(/\D/g, '');
+        day = day.padStart(2, '0');
+        year = `20${year.padStart(2, '0')}`;
+        const months = {
+            "Jan": "01",
+            "Feb": "02",
+            "Mar": "03",
+            "Apr": "04",
+            "May": "05",
+            "Jun": "06",
+            "Jul": "07",
+            "Aug": "08",
+            "Sep": "09",
+            "Oct": "10",
+            "Nov": "11",
+            "Dec": "12"
+        };
+        const monthNumber = months[month];
+        return `${year}-${monthNumber}-${day}`;
+    }
+
+    const checkInParam = urlParamsDom.get('checkIn');
+    if (checkInParam) {
+        const isoDate = convertToISO(checkInParam);
+        checkIn.value = isoDate;
+    }
+
+    function getSelectedStatus(studentId) {
+        const presentRadio = document.getElementById('present_' + studentId);
+        const absentRadio = document.getElementById('absent_' + studentId);
+        return presentRadio.checked ? 1 : absentRadio.checked ? 0 : null;
+    }
+
+    function saveOrUpdateAttendance() {
+        submitButtonDom.disabled = true;
+        const students = Array.from(document.querySelectorAll('#studentList table tr:not(:first-child)'));
+        const studentAttendanceData = students.map((student) => {
+            const studentId = student.querySelector('input[type="radio"]').id.split('_')[1];
+            const isPresentValue = getSelectedStatus(studentId);
+            return {
+                studentId,
+                isPresent: isPresentValue
+            };
+        });
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "blockId": blockCodeDom.value,
+            "blockFloorId": floorNumberDom.value,
+            "roomId": roomNumberDom.value,
+            "checkInDate": checkInDom.value,
+            "attendance": studentAttendanceData
+        });
+    
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw
+        };
+
+        fetch(getAppUrl(`api/attendance/${blockCode.value}/${floorNumber.value}/${roomNumber.value}`),
+            requestOptions)
+            .then(async (response) => {
+                if (response.status === 200) {
+                    window.location = getAppUrl('attendance');
+                } else {
+                    alert(await response.text());
+                    submitButtonDom.disabled = false;
+                }
+            })
+            .catch(error => {
+                alert('Something went wrong.Please try later.')
+                submitButtonDom.disabled = false;
+            });
+    }
+    
+    function toggleSubmitButton() {
+        const students = document.querySelectorAll('#studentList li');
+        let allStatusSelected = true;
+
+        students.forEach((student) => {
+            const studentId = student.querySelector('input[type="radio"]').id.split('_')[1];
+            if (getSelectedStatus(studentId) === null) {
+                allStatusSelected = false;
+            }
+        });
+        submitButtonDom.disabled = !(
+            allStatusSelected
+        );
+    }
+
+    async function populateBlockCode() {
+        blockCodeDom.innerHTML = '';
+        backDom.style.display = 'none';
+        var activeOptions = [];
+        var disabledOptions = [];
+
+        try {
+            if (checkInDom.value > today) {
+                statusDom.style.display = 'none';
+                blockCodeDom.innerText = 'Not allowed to take attendance for a future date.';
+                blockCodeDom.style.color = 'red';
+                return;
+            }
+
+            const myParam = urlParamsDom.get('blockId');
+            const url = myParam ? `${getAppUrl('api/attendance/block')}?blockId=${myParam}` :
+                `${getAppUrl('api/attendance/block')}?date=${checkInDom.value}`;
+
+            if (myParam) {
+                blockCodeDom.value = myParam;
+                return populateFloorNumber(myParam);
+            }
+
+            var myHeaders = new Headers();
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            const response = await fetch(url);
+            const blocks = await response.json();
+
+            blocks.forEach(async (block) => {
+                const blockDom = document.createElement('button');
+                blockDom.className = 'btn btn-secondary me-2';
+                blockDom.value = block.blockId;
+                blockDom.textContent = block.blockCode;
+
+                if (block.studentsCount > 0) {
+                    let blockBasedPercentage = (block.attendanceCount / block.studentsCount) * 100;
+
+                    if (isNaN(blockBasedPercentage)) {
+                        blockBasedPercentage = 0;
+                    } else {
+                        blockBasedPercentage = Math.floor(blockBasedPercentage);
+                    }
+
+                    blockDom.textContent += '-' + blockBasedPercentage + '%';
+
+                    if (blockBasedPercentage === 100) {
+                        blockDom.style.backgroundColor = 'green';
+                    } else if (block.attendanceCount > 0 && blockBasedPercentage <= 99) {
+                        blockDom.style.backgroundColor = 'orange';
+                    } else {
+                        blockDom.style.backgroundColor = 'red';
+                    }
+                        activeOptions.push(blockDom);
+                } else {
+                    blockDom.classList.add('disabled');
+                    disabledOptions.push(blockDom);
+                }
+
+                blockDom.onclick = () => {
+                    currentBlockId = block.blockId;
+                    blockCodeDom.value = block.blockId;
+                    populateFloorNumber(block.blockId);
+                    blockCodeContainerDom.style.display = 'none';
+                    floorNumberContainerDom.style.display = 'block';
+                };
+            })
+
+            activeOptions.forEach(block => {
+                blockCodeDom.appendChild(block);
+            })
+
+            disabledOptions.forEach(block => {
+                blockCodeDom.appendChild(block);
+            })
+
+        } catch (error) {
+            alert('Something went wrong.Please try later.');
+        }
+    }
+
+    async function populateFloorNumber(blockId) {
+        floorNumberDom.innerHTML = '';
+        backDom.style.display = 'block';
+        var activeOptions = [];
+        var disabledOptions = [];
+        try {
+            if (checkInDom.value > today) {
+                floorNumberDom.innerText = 'Not allowed to take attendance for a future date.';
+                floorNumberDom.style.color = 'red';
+                return;
+            }
+
+            const myParam = urlParamsDom.get('blockFloorId');
+            const url = myParam ? 
+            `${getAppUrl('api/attendance/blockfloor')}?date=${checkInDom.value}&blockId=${myParam}` :
+                `${getAppUrl('api/attendance/blockfloor')}?date=${checkInDom.value}&blockId=${blockId}`;
+
+            if (myParam) {
+                floorNumberDom.value = myParam;
+                return populateRoomNumber(myParam)
+            }
+
+            var myHeaders = new Headers();
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            const response = await fetch(url);
+            const blockFloors = await response.json();
+
+            blockFloors.forEach((blockFloor) => {
+                const blockFloorDom = document.createElement('button');
+                blockFloorDom.className = 'btn btn-secondary me-2';
+                blockFloorDom.value = blockFloor.blockFloorId;
+                blockFloorDom.textContent = blockFloor.floorNumber;
+
+                if (blockFloor.studentsCount > 0) {
+                    let blockFloorBasedPercentage = 
+                        (blockFloor.attendanceCount / blockFloor.studentsCount) * 100;
+
+                    if (isNaN(blockFloorBasedPercentage)) {
+                        blockFloorBasedPercentage = 0;
+                    } else {
+                        blockFloorBasedPercentage = Math.floor(blockFloorBasedPercentage);
+                    }
+
+                    blockFloorDom.textContent += '-' + blockFloorBasedPercentage + '%';
+
+                    if (blockFloorBasedPercentage === 100) {
+                        blockFloorDom.style.backgroundColor = 'green';
+                    } else if (blockFloor.attendanceCount > 0 && blockFloorBasedPercentage <= 99) {
+                        blockFloorDom.style.backgroundColor = 'orange';
+                    } else {
+                        blockFloorDom.style.backgroundColor = 'red';
+                    }
+
+                    activeOptions.push(blockFloorDom);
+                } else {
+                    blockFloorDom.classList.add('disabled');
+                    disabledOptions.push(blockFloorDom);
+                }
+
+                blockFloorDom.onclick = () => {
+                    currentBlockFloorId = blockFloor.blockFloorId;
+                    floorNumberDom.value = blockFloor.blockFloorId;
+                    populateRoomNumber(blockFloor.blockFloorId);
+                    floorNumberContainerDom.style.display = 'none';
+                    roomNumberContainerDom.style.display = 'block';
+                };
+            })
+
+            activeOptions.forEach(blockFloor => {
+                floorNumberDom.appendChild(blockFloor);
+            })
+
+            disabledOptions.forEach(blockFloor => {
+                floorNumberDom.appendChild(blockFloor);
+            })
+        } catch (error) {
+            alert('Something went wrong.Please try later.')
+        }
+    }
+
+    async function populateRoomNumber(blockFloorId) {
+        roomNumberDom.innerHTML = '';
+        backDom.style.display = 'block';
+        var activeOptions = [];
+        var disabledOptions = [];
+
+        try {
+            if (checkInDom.value > today) {
+                roomNumberDom.innerText = 'Not allowed to take attendance for a future date.';
+                roomNumberDom.style.color = 'red';
+                return;
+            }
+
+            const myParam = urlParamsDom.get('roomId'); 
+            const url = myParam ? 
+            `${getAppUrl('api/attendance/room')}?date=${checkInDom.value}&blockFloorId=${myParam}` :
+                `${getAppUrl('api/attendance/room')}?date=${checkInDom.value}&blockFloorId=${blockFloorId}`;
+
+            if (myParam) {
+                roomNumberDom.value = myParam;
+                return populateStudentList(myParam);
+            }
+
+            var myHeaders = new Headers();
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            const response = await fetch(url);
+            const rooms = await response.json();
+
+            rooms.forEach(async (room) => {
+                const roomDom = document.createElement('button');
+                roomDom.className = 'btn btn-secondary me-2';
+                roomDom.value = room.roomId;
+                roomDom.textContent = room.roomNumber;
+
+                if (room.studentsCount > 0) {
+                    let roomBasedPercentage = (room.attendanceCount / room.studentsCount) * 100;
+
+                    if (isNaN(roomBasedPercentage)) {
+                        roomBasedPercentage = 0;
+                    } else {
+                        roomBasedPercentage = Math.floor(roomBasedPercentage);
+                    }
+
+                    roomDom.textContent += '-' + roomBasedPercentage + '%';
+
+                    if (roomBasedPercentage === 100) {
+                        roomDom.style.backgroundColor = 'green';
+                    } else if (room.attendanceCount > 0 && roomBasedPercentage <= 99) {
+                        roomDom.style.backgroundColor = 'orange';
+                    } else {
+                        roomDom.style.backgroundColor = 'red';
+                    }
+
+                    activeOptions.push(roomDom);
+                } else {
+                    roomDom.classList.add('disabled');
+                    disabledOptions.push(roomDom);
+                }
+
+                roomDom.onclick = () => {
+                    currentRoomId = room.roomId;
+                    roomNumberDom.value = room.roomId;
+                    populateStudentList(room.roomId);
+                    roomNumberContainerDom.style.display = 'none';
+                    studentContainerDom.style.display = 'block';
+                };
+            });
+
+            activeOptions.forEach(room => {
+                roomNumberDom.appendChild(room);
+            })
+
+            disabledOptions.forEach(room => {
+                roomNumberDom.appendChild(room);
+            })
+
+        } catch (error) {
+            alert('Something went wrong.Please try later.')
+        }
+    }
+
+    async function populateStudentList(roomId) {
+        studentListDom.innerHTML = '';
+
+        if (studentListDom.style.color) {
+            studentListDom.style.color = '';
+        }
+
+        if (checkInDom.value > today) {
+            submitButtonDom.style.display = 'none';
+            studentListDom.innerText = 'Not allowed to take attendance for a future date.';
+            studentListDom.style.color = 'red';
+            return;
+        }
+
+        if (checkInParam) {
+            checkInDom.readOnly = true;
+            backDom.style.display = 'none';
+        } else {
+            backDom.style.display = 'block';
+        }
+
+        statusDom.style.visibility = 'hidden';
+
+        try {
+            const response = await fetch(
+                `${getAppUrl(`api/attendance/student/${roomId}`)}?checkIn=${checkInDom.value}`);
+            const students = await response.json();
+
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-striped', 'table-hover', 'table-bordered', 'border');
+
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `<th scope="col">Sno</th>
+                                   <th scope="col">Name</th>
+                                   <th scope="col">Status</th>`;
+            table.appendChild(headerRow);
+
+            students.forEach((student, index) => {
+                const isPresentChecked = student.isPresent === 1 ? 'checked' : '';
+                const isAbsentChecked = student.isPresent === 0 ? 'checked' : '';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td scope="col">${index + 1}</td>
+                    <td scope="col">${student.name}</td>
+                    <td scope="col">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="isPresent_${student.studentId}" value="1" id="present_${student.studentId}" ${isPresentChecked} checked>
+                            <label class="form-check-label" for="present_${student.studentId}">Present</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="isPresent_${student.studentId}" value="0" id="absent_${student.studentId}" ${isAbsentChecked}>
+                            <label class="form-check-label" for="absent_${student.studentId}">Absent</label>
+                        </div>
+                    </td>`;
+                table.appendChild(row);
+            });
+
+            studentListDom.innerHTML = '';
+            studentListDom.appendChild(table);
+            blockCodeContainerDom.style.display = 'none';
+            studentContainerDom.style.display = 'block';
+        } catch (error) {
+            alert('Something went wrong.Please try later.')
+        }
+    }
+
+    checkInDom.addEventListener('change', () => {
+        if (statusDom.style.visibility) {
+            statusDom.style.visibility = 'visible';
+        }
+
+        if (checkInDom.value > today) {
+            statusDom.style.visibility = 'hidden';
+        } 
+
+        if (floorNumberContainerDom.style.display === 'block') {
+            return populateFloorNumber(currentBlockId)
+        } else if (roomNumberContainerDom.style.display === 'block') {
+            return populateRoomNumber(currentBlockFloorId);
+        } else if (studentContainerDom.style.display === 'block') {
+            return populateStudentList(currentRoomId)
+        }
+    });
+
+    function backToView() {
+        if (floorNumberContainerDom.style.display === 'block') {
+            floorNumberContainerDom.style.display = 'none'
+            blockCodeContainerDom.style.display = 'flex';
+            blockCodeContainerDom.classList.add('justify-content-center'); 
+            statusDom.style.display = 'block';
+            backDom.style.display = 'none';
+        } else if (roomNumberContainerDom.style.display === 'block') {
+            roomNumberContainerDom.style.display = 'none'
+            floorNumberContainerDom.style.display = 'block'
+            statusDom.style.display = 'block';
+            backDom.style.display = 'block';
+        } else {
+            studentContainerDom.style.display = 'none'
+            roomNumberContainerDom.style.display = 'block'
+            statusDom.style.visibility = 'visible';
+            backDom.style.display = 'block';
+        }
+    }
+
+    window.addEventListener('load', () => {
+        populateBlockCode()
+    })
+
+</script>
+        

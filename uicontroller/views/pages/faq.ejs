@@ -1,0 +1,191 @@
+<%- include('../partials/wardenuse/header.ejs', { appURL: appURL, title: 'F.A.Q' }) %>
+<%- include('../partials/wardenuse/nonloginlayout.ejs', { subTitle: 'Frequently Asked Questions' }) %>
+<%- include('../partials/breadcrumb.ejs', { breadCrumbs: breadCrumbs }) %>
+<%- include('../partials/wardenuse/aside.ejs', { activeMenu: 'faq' }) %>
+
+<section class="section faq">
+    <div class="row">
+      <div class="col-lg-6">
+
+        <div class="card basic">
+          <div class="card-body">
+            <h5 class="card-title">Basic Questions</h5>
+
+            <div>
+              <h6>1. What is the Hostel Attendance Management System?</h6>
+              <p>It is a system that helps manage student attendance in hostels by tracking attendance,
+                room assignments, and block and block floor details.</p>
+            </div>
+
+            <div class="pt-2">
+              <h6>2. How can I access the system?</h6>
+              <p>You can log in with your admin, warden, or student credentials, depending on your role.</p>
+            </div>
+
+            <div class="pt-2">
+              <h6>3. How do I mark attendance for students?</h6>
+              <p>Both the admin and the warden can mark attendance by selecting the block, floor, room, 
+                and students from the interface. They can then update the attendance status of each
+                student as "Present" or "Absent.</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- F.A.Q Group 1 -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Forgot Your Login Credentials?</h5>
+
+            <div class="accordion accordion-flush" id="faq-group-1">
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-target="#faqsOne-1" type="button" data-bs-toggle="collapse">
+                    What should I do if I forget my login credentials?
+                  </button>
+                </h2>
+                <div id="faqsOne-1" class="accordion-collapse collapse" data-bs-parent="#faq-group-1">
+                  <div class="accordion-body">
+                    If you forget your login credentials, use the "Forgot Password" 
+                    option available on the login page. You will receive an OTP to reset your password.<br>
+                    <b>Note:</b> After multiple failed attempts to log in, your account will be temporarily locked 
+                    for 3 hours after you can try again.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- End F.A.Q Group 1 -->
+
+      </div>
+
+      <div class="col-lg-6">
+
+        <!-- F.A.Q Group 2 -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Understanding the Challenges of Attendance Management</h5>
+
+            <div class="accordion accordion-flush" id="faq-group-2">
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-target="#faqsTwo-1" type="button" data-bs-toggle="collapse">
+                    Who can access the attendance data?
+                  </button>
+                </h2>
+                <div id="faqsTwo-1" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+                  <div class="accordion-body">
+                    Both the admin and the warden have the same access to attendance data. There is no difference in their 
+                    ability to manage attendance.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                
+                <div id="faqsTwo-2" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+                  <div class="accordion-body">
+                    In minus quia impedit est quas deserunt deserunt et. Nulla non quo dolores minima fugiat aut saepe aut inventore. Qui nesciunt odio officia beatae iusto sed voluptatem possimus quas. Officia vitae sit voluptatem nostrum a.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-target="#faqsTwo-3" type="button" data-bs-toggle="collapse">
+                    How can I update the attendance data if I made a mistake? 
+                  </button>
+                </h2>
+                <div id="faqsTwo-3" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+                  <div class="accordion-body">
+                    If a mistake is made while marking attendance, both the admin and the 
+                    warden can edit or update the attendance records directly through the system.
+                    To update the attendance, go to the attendance list. You will find an edit icon next to each 
+                    attendance record. Click on the icon to make changes, and then save the updated information.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-target="#faqsTwo-4" type="button" data-bs-toggle="collapse">
+                    What happens if there is no attendance data for a selected student, month, or year?
+                  </button>
+                </h2>
+                <div id="faqsTwo-4" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+                  <div class="accordion-body">
+                    If no matching attendance data exists, the default calendar view will be displayed.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-target="#faqsTwo-5" type="button" data-bs-toggle="collapse">
+                    Can I access the system from mobile devices?
+                  </button>
+                </h2>
+                <div id="faqsTwo-5" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+                  <div class="accordion-body">
+                    Yes, the system is mobile-friendly and can be accessed using smartphones, tablets, 
+                    or desktops.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-target="#faqsTwo-6" type="button" data-bs-toggle="collapse">
+                    How do I contact support if I face technical issues?
+                  </button>
+                </h2>
+                <div id="faqsTwo-6" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+                  <div class="accordion-body">
+                    If you encounter technical issues, please contact support by 
+                    emailing support@example.com or calling +1-800-123-4567.                
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div><!-- End F.A.Q Group 2 -->
+
+        <!-- F.A.Q Group 3 -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Access Restricted</h5>
+
+            <div class="accordion accordion-flush" id="faq-group-3">
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-target="#faqsThree-1" type="button" data-bs-toggle="collapse">
+                    Who can edit, delete, or add warden information?
+                  </button>
+                </h2>
+                <div id="faqsThree-1" class="accordion-collapse collapse" data-bs-parent="#faq-group-3">
+                  <div class="accordion-body">
+                    Only admins have the authority to edit, delete, or add warden information. 
+                    If you need access, please contact the system administrator.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- End F.A.Q Group 3 -->
+
+      </div>
+
+    </div>
+  </section>
+
+</main><!-- End #main -->
+
+<%- include('../partials/wardenuse/footer.ejs') %>
+
+
