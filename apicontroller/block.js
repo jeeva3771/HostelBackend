@@ -112,15 +112,18 @@ async function readBlockFloorBlockCodeCount(req, res) {
     const mysqlClient = req.app.mysqlClient;
     const blockId = req.query.blockId;
     try {
-        let query = /*sql*/`SELECT 
+        let query = /*sql*/`
+            SELECT 
                 blockId, 
                 blockCode,
                 (SELECT COUNT(*) FROM blockfloor b
                 WHERE b.blockId = bk.blockId 
                 AND b.deletedAt IS NULL) AS floorCount 
-                FROM block bk 
-                WHERE bk.isActive = 1 
-                AND bk.deletedAt IS NULL ORDER BY bk.blockCode ASC`;
+            FROM block bk 
+            WHERE 
+                bk.isActive = 1 AND 
+                bk.deletedAt IS NULL 
+            ORDER BY bk.blockCode ASC`;
 
         const queryParams = [];
         if (blockId) {
@@ -131,7 +134,7 @@ async function readBlockFloorBlockCodeCount(req, res) {
         const blockFloorBlockCodeCount = await mysqlQuery(query, queryParams, mysqlClient);
 
         if (blockFloorBlockCodeCount.length === 0) {
-            return res.status(404).send('No blocks found');
+            return res.status(404).send('No block code found');
         }
 
         res.status(200).send(blockFloorBlockCodeCount);

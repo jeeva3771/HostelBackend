@@ -129,11 +129,12 @@ async function readFloorNumberByBlockId(req, res) {
             WHERE 
                 b.blockId = ? 
                 AND b.isActive = 1
-            AND b.deletedAt IS NULL ORDER BY b.floorNumber ASC`;
+                AND b.deletedAt IS NULL 
+            ORDER BY b.floorNumber ASC`;
         const roomBlockFloorCount = await mysqlQuery(sqlQuery, [blockId], mysqlClient);
 
         if (roomBlockFloorCount.length === 0) {
-            return res.status(404).send('No BlockFloors found');
+            return res.status(404).send('Selected block code has no active floors.');
         }
         res.status(200).send(roomBlockFloorCount)
     } catch (error) {

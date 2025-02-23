@@ -143,7 +143,7 @@ async function readRoomNumberByBlockFloorId(req, res) {
             ORDER BY r.roomNumber ASC`, [blockFloorId], mysqlClient);
 
         if (roomNumberByBlockFloorId.length === 0) {
-            return res.status(404).send('No rooms found');
+            return res.status(404).send('Selected floor number has no active rooms.');
         }
 
         const enrichedRooms = roomNumberByBlockFloorId.map(room => ({

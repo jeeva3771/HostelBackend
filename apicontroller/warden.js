@@ -174,6 +174,12 @@ async function createWarden(req, res) {
         password,
         superAdmin
     } = req.body
+     console.log(firstName,
+        lastName,
+        dob,
+        emailId,
+        password,
+        superAdmin, 'ppppppppppppppp')
     const createdBy = req.session.warden.wardenId;
 
     try {
