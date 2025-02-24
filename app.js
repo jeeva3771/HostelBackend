@@ -89,7 +89,7 @@ function setupApplication(app) {
     app.mysqlClient = mysql.createConnection(dbOptions)    
 }
 
-const studentApp = express()
+// const studentApp = express()
 const wardenApp = express()
 
 setupApplication(wardenApp)
@@ -137,7 +137,6 @@ wardenApp.mysqlClient.connect(function (err) {
         student(wardenApp)
         attendance(wardenApp)
         home(wardenApp)
-        studentUse(studentApp)
 
 
         wardenApp.listen(process.env.APP_PORT, () => {
@@ -148,27 +147,30 @@ wardenApp.mysqlClient.connect(function (err) {
 
 // only works for student
 
-studentApp.use((req, res, next) => {
-    if (pageStudentSessionExclude.includes(req.originalUrl)) {
-        return next()
-    }
-    if (req.originalUrl !== '/student/login/') {
-        if (req.session.isLoggedStudent !== true) {
-            return res.status(401).send('Session expired.')
-        }
-    }
-    return next()
-})
+// studentApp.use((req, res, next) => {
+//     if (pageStudentSessionExclude.includes(req.originalUrl)) {
+//         return next()
+//     }
+//     if (req.originalUrl !== '/student/login/') {
+//         if (req.session.isLoggedStudent !== true) {
+//             return res.status(401).send('Session expired.')
+//         }
+//     }
+//     return next()
+// })
 
-studentApp.mysqlClient.connect(function (err) {
-    if (err) {
-        console.error(err)
-    } else {
-        console.log('mysql connected')
-        studentUse(studentApp)
-        studentApp.listen(process.env.STUDENT_APP_PORT, () => {
-            logger.info(`listen ${process.env.STUDENT_APP_PORT} port`)
-        })
-    }
-})
+// studentApp.mysqlClient.connect(function (err) {
+//     if (err) {
+//         console.error(err)
+//     } else {
+//         console.log('mysql connected')
+//         studentUse(studentApp)
+//         studentApp.listen(process.env.STUDENT_APP_PORT, () => {
+//             logger.info(`listen ${process.env.STUDENT_APP_PORT} port`)
+//         })
+//     }
+// })
 
+
+// STUDENT_APP_URL=https://hostelbackend-production-7cfd.up.railway.app
+// STUDENT_APP_PORT=80
