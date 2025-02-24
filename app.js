@@ -117,18 +117,18 @@ const pageStudentSessionExclude = [
 ]
 
 // only works for warden
-wardenApp.use((req, res, next) => {
-    if (pageWardenSessionExclude.includes(req.originalUrl)) {
-        return next()
-    }
+// wardenApp.use((req, res, next) => {
+//     if (pageWardenSessionExclude.includes(req.originalUrl)) {
+//         return next()
+//     }
     
-    if (req.originalUrl !== '/login') {
-        if (req.session.isLogged !== true) {
-            return res.status(401).send('Session expired.')
-        }
-    }
-    return next()
-})
+//     if (req.originalUrl !== '/login') {
+//         if (req.session.isLogged !== true) {
+//             return res.status(401).send('Session expired.')
+//         }
+//     }
+//     return next()
+// })
 
 wardenApp.mysqlClient.connect(function (err) {
     if (err) {
