@@ -153,6 +153,7 @@ wardenApp.mysqlClient.connect(function (err) {
 })
 
 // only works for student
+
 studentApp.use((req, res, next) => {
     if (pageStudentSessionExclude.includes(req.originalUrl)) {
         return next()
