@@ -153,17 +153,17 @@ wardenApp.mysqlClient.connect(function (err) {
 })
 
 // only works for student
-studentApp.use((req, res, next) => {
-    if (pageStudentSessionExclude.includes(req.originalUrl)) {
-        return next()
-    }
-    if (req.originalUrl !== '/student/login/') {
-        if (req.session.isLoggedStudent !== true) {
-            return res.status(401).send('Session expired.')
-        }
-    }
-    return next()
-})
+// studentApp.use((req, res, next) => {
+//     if (pageStudentSessionExclude.includes(req.originalUrl)) {
+//         return next()
+//     }
+//     if (req.originalUrl !== '/student/login/') {
+//         if (req.session.isLoggedStudent !== true) {
+//             return res.status(401).send('Session expired.')
+//         }
+//     }
+//     return next()
+// })
 
 studentApp.mysqlClient.connect(function (err) {
     if (err) {
