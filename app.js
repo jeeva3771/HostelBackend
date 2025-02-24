@@ -136,8 +136,9 @@ wardenApp.mysqlClient.connect(function (err) {
         room(wardenApp)
         student(wardenApp)
         attendance(wardenApp)
-        studentUse(wardenApp)
         home(wardenApp)
+        studentUse(studentApp)
+
 
         wardenApp.listen(process.env.APP_PORT, () => {
             logger.info(`listen ${process.env.APP_PORT} port`)
