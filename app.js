@@ -118,7 +118,7 @@ wardenApp.use((req, res, next) => {
     
     if (req.originalUrl !== '/login') {
         if (req.session.isLogged !== true) {
-            console.log(req.originalUrl, '401' )
+            console.log('-------------401' )
 
             return res.status(401).send('Session expired.')
         }
