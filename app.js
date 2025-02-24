@@ -117,18 +117,18 @@ const pageStudentSessionExclude = [
 ]
 
 // only works for warden
-// wardenApp.use((req, res, next) => {
-//     if (pageWardenSessionExclude.includes(req.originalUrl)) {
-//         return next()
-//     }
+wardenApp.use((req, res, next) => {
+    if (pageWardenSessionExclude.includes(req.originalUrl)) {
+        return next()
+    }
     
-//     if (req.originalUrl !== '/login') {
-//         if (req.session.isLogged !== true) {
-//             return res.status(401).send('Session expired.')
-//         }
-//     }
-//     return next()
-// })
+    if (req.originalUrl !== '/login') {
+        if (req.session.isLogged !== true) {
+            return res.status(401).send('Session expired.')
+        }
+    }
+    return next()
+})
 
 wardenApp.mysqlClient.connect(function (err) {
     if (err) {
@@ -152,18 +152,18 @@ wardenApp.mysqlClient.connect(function (err) {
     }
 })
 
-// // only works for student
-// studentApp.use((req, res, next) => {
-//     if (pageStudentSessionExclude.includes(req.originalUrl)) {
-//         return next()
-//     }
-//     if (req.originalUrl !== '/student/login/') {
-//         if (req.session.isLoggedStudent !== true) {
-//             return res.status(401).send('Session expired.')
-//         }
-//     }
-//     return next()
-// })
+// only works for student
+studentApp.use((req, res, next) => {
+    if (pageStudentSessionExclude.includes(req.originalUrl)) {
+        return next()
+    }
+    if (req.originalUrl !== '/student/login/') {
+        if (req.session.isLoggedStudent !== true) {
+            return res.status(401).send('Session expired.')
+        }
+    }
+    return next()
+})
 
 studentApp.mysqlClient.connect(function (err) {
     if (err) {
