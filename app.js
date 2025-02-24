@@ -112,11 +112,14 @@ const pageStudentSessionExclude = [
 // only works for warden
 wardenApp.use((req, res, next) => {
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
+        console.log(req.originalUrl, 'exclude' )
         return next()
     }
     
     if (req.originalUrl !== '/login') {
         if (req.session.isLogged !== true) {
+            console.log(req.originalUrl, '401' )
+
             return res.status(401).send('Session expired.')
         }
     }
