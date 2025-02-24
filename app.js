@@ -27,13 +27,6 @@ const logger = pino({
     level: 'info'
 })
 
-logger.info(process.env.DB_HOST)
-logger.info(process.env.DB_USER)
-
-logger.info(process.env.DB_PASSWORD)
-
-logger.info(process.env.DB_NAME)
-
 const dbOptions = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
