@@ -49,7 +49,7 @@ function setupApplication(app) {
     app.use(cookieParser())
 
     const corsOptions = {
-        origin: 'http://localhost:3000', // Allow specific origin
+        origin: 'https://hostelfrontend-production.up.railway.app/', // Allow specific origin 
         methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
         credentials : true
     }
