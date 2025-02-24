@@ -100,7 +100,7 @@ const studentApp = express()
 const wardenApp = express()
 
 setupApplication(wardenApp)
-// setupApplication(studentApp)
+setupApplication(studentApp)
 
 const pageWardenSessionExclude = [
     '/login/',
