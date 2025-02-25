@@ -291,7 +291,6 @@ function readStudentImageById(req, res) {
 }
 
 async function readStudentName(req, res) {
-    console.log('hiiiiiiiii')
     const mysqlClient = req.app.mysqlClient;
     const studentId = req.session.studentInfo.studentId;
  
@@ -370,12 +369,12 @@ async function deleteImage(req, res) {
 }
 
 module.exports = (app) => {
-    app.get('/api/student/name', readStudentName)
-    app.get('/api/student/image', readStudentImageById)
-    app.delete('/api/student/deleteimage', deleteImage)
-    app.post('/api/student/generateotp', generateOtp)
-    app.put('/api/student/verifyotp/authentication', verifyOtpStudentAuthentication)
-    app.get('/api/student/attendancereport', studentAttendanceReport)
-    app.get('/api/student/logout', studentLogout)
-    app.put('/api/student/editimage', multerMiddleware, updateImage)
+    app.get('/student/api/student/name', readStudentName)
+    app.get('/student/api/student/image', readStudentImageById)
+    app.delete('/student/api/student/deleteimage', deleteImage)
+    app.post('/student/api/student/generateotp', generateOtp)
+    app.put('/student/api/student/verifyotp/authentication', verifyOtpStudentAuthentication)
+    app.get('/student/api/student/attendancereport', studentAttendanceReport)
+    app.get('/student/api/student/logout', studentLogout)
+    app.put('/student/api/student/editimage', multerMiddleware, updateImage)
 }
