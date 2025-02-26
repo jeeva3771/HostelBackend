@@ -102,14 +102,6 @@ const pageStudentSessionExclude = [
     '/api/student/verifyotp/authentication/'
 ]
 
-
-'/student/api/student/name',
-    '/student/api/student/image',
-    '/student/api/student/deleteimage'
-  
-   '/student/api/student/attendancereport'
-   '/student/api/student/logout'
-   '/student/api/student/editimage'
 const studentUrls = [
     '/student/api/student/name',
     '/student/api/student/image',
@@ -141,12 +133,8 @@ app.use((req, res, next) => {
     }
 
     if (req.originalUrl !== '/student/login') {
-        if (studentUrls.includes(req.originalUrl)) {
-            if (req.session.isLoggedStudent !== true) {
-                console.log(2)
-
-                return res.status(401).send('Session expired.')
-            }
+        if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
+            return res.status(401).send('Session expired.');
         }
     }
     
