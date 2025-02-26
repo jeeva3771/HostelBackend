@@ -99,8 +99,8 @@ const pageWardenSessionExclude = [
 
 const pageStudentSessionExclude = [
     '/student/login/',
-    '/api/student/generateotp/',
-    '/api/student/verifyotp/authentication/'
+    '/student/api/student/generateotp/',
+    '/student/api/student/verifyotp/authentication/'
 ]
 
 const studentUrls = [
