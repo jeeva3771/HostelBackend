@@ -42,7 +42,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 const corsOptions = {
-    origin: 'https://localhost:3000/',  // Allow specific origin 
+    origin: 'https://localhost:3000',  // Allow specific origin 
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
     credentials : true
 }
