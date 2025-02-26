@@ -56,7 +56,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24,  
-        secure: false
+        secure: true
     }
 }))
 
@@ -118,7 +118,7 @@ app.use((req, res, next) => {
     }
 
     if (req.originalUrl !== '/login') {
-        console.log(req.session, 'warden')
+        console.log(req.session.isLogged, 'warden')
         if (req.session.isLogged !== true) {
             console.log('11111')
             return res.status(401).send('Session expired.')
