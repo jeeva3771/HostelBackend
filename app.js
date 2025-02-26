@@ -42,7 +42,8 @@ app.use(express.json())
 app.use(cookieParser())
   
 const corsOptions = {
-    origin: ['https://hostelbackend-production-24da.up.railway.app' ],  // Allow specific origin 
+    origin: ['https://hostelbackend-production-24da.up.railway.app', 'http://localhost:3000' ],  // Allow specific origin 
+    allowedHeaders: ['Content-Type', 'Authorization'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
     credentials : true
 }
