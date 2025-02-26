@@ -54,7 +54,7 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
     credentials : true
 }
-app.options('*', cors(corsOptions));
+app.use(cors(corsOptions))
 
 app.use(session({ 
     store: sessionStore,
