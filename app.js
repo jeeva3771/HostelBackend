@@ -119,7 +119,6 @@ app.use((req, res, next) => {
 
     if (req.originalUrl !== '/login') {
         if (req.session.isLogged !== true) {
-        console.log(req.originalUrl, 'warden')
             return res.status(401).send('Session expired.')
         }
     }
@@ -133,8 +132,6 @@ app.use((req, res, next) => {
 
     if (req.originalUrl !== '/student/login') {
         if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
-            console.log(req.originalUrl, 'student')
-
             return res.status(401).send('Session expired.');
         }
     }
