@@ -393,7 +393,7 @@ async function authentication(req, res) {
                 deletedAt IS NULL`,
             [emailId]
         , mysqlClient)
-        console.log(warden)
+
         if (!warden) {
             req.session.isLogged = false
             req.session.warden = null
