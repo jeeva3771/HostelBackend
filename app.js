@@ -56,12 +56,10 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24,  
-        secure: true, 
-        httpOnly: true,
-        sameSite: 'none' 
+        sameSite: "None",  // Allows cross-origin cookies
+        httpOnly: true
     }
-}));
-
+}))
 
 app.use(
     pinoHttp({
