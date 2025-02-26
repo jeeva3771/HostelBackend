@@ -42,7 +42,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 const corsOptions = {
-    origin: 'https://hostelfrontend-production.up.railway.app/',  // Allow specific origin 
+    origin: 'https://localhost:3000',  // Allow specific origin 
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
     credentials : true
 }
@@ -112,6 +112,7 @@ const studentUrls = [
 ]
 
 app.use((req, res, next) => {
+    console.log(req.originalUrl)
     console.log(pageWardenSessionExclude.includes(req.originalUrl))
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
         console.log('ok next')
