@@ -118,7 +118,7 @@ app.use((req, res, next) => {
     }
 
     if (req.originalUrl !== '/login') {
-        console.log(req.session.isLogged)
+        console.log(req.session , '000000000000000')
         if (req.session.isLogged !== true) {
             return res.status(401).send('Session expired.')
         }
