@@ -405,7 +405,6 @@ async function authentication(req, res) {
         if (isValid) {
             req.session.warden = warden
             req.session.isLogged = true
-            console.log(req.session , 'session')
             res.status(200).send(warden)
         } else {
             req.session.isLogged = false
