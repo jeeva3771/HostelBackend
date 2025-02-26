@@ -109,6 +109,7 @@ async function readBlockById(req, res) {
 }
 
 async function readBlockFloorBlockCodeCount(req, res) { 
+    console.log(req.session.isLogged, 'trueeeeeeeeeeeeeeeeeeee')
     const mysqlClient = req.app.mysqlClient;
     const blockId = req.query.blockId;
     try {
