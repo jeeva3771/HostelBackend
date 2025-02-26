@@ -112,36 +112,33 @@ const studentUrls = [
     '/student/api/student/editimage'
 ]
 
-// app.use((req, res, next) => {
-//     console.log(req.originalUrl)
-//     console.log(pageWardenSessionExclude.includes(req.originalUrl))
-//     if (pageWardenSessionExclude.includes(req.originalUrl)) {
-//         console.log('ok next')
-//         return next()
-//     }
+app.use((req, res, next) => {
+    if (pageWardenSessionExclude.includes(req.originalUrl)) {
+        console.log('ok next')
+        return next()
+    }
     
-//     if (req.originalUrl !== '/login') {
-//         if (req.session.isLogged !== true) {
-//             console.log(1)
-//             return res.status(401).send('Session expired.')
-//         }
-//     }
-//     return next()
-// })
+    if (req.originalUrl !== '/login') {
+        if (req.session.isLogged !== true) {
+            return res.status(401).send('Session expired.')
+        }
+    }
+    return next()
+})
 
-// app.use((req, res, next) => {
-//     if (pageStudentSessionExclude.includes(req.originalUrl)) {
-//         return next()
-//     }
+app.use((req, res, next) => {
+    if (pageStudentSessionExclude.includes(req.originalUrl)) {
+        return next()
+    }
 
-//     if (req.originalUrl !== '/student/login') {
-//         if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
-//             return res.status(401).send('Session expired.');
-//         }
-//     }
+    if (req.originalUrl !== '/student/login') {
+        if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
+            return res.status(401).send('Session expired.');
+        }
+    }
     
-//     return next()
-// })
+    return next()
+})
 
 app.mysqlClient.connect(function (err) {
     if (err) {
@@ -164,33 +161,3 @@ app.mysqlClient.connect(function (err) {
         })
     }
 })
-
-// only works for student
-
-// studentApp.use((req, res, next) => {
-//     if (pageStudentSessionExclude.includes(req.originalUrl)) {
-//         return next()
-//     }
-//     if (req.originalUrl !== '/student/login/') {
-//         if (req.session.isLoggedStudent !== true) {
-//             return res.status(401).send('Session expired.')
-//         }
-//     }
-//     return next()
-// })
-
-// studentApp.mysqlClient.connect(function (err) {
-//     if (err) {
-//         console.error(err)
-//     } else {
-//         console.log('mysql connected')
-//         studentUse(studentApp)
-//         studentApp.listen(process.env.STUDENT_APP_PORT, () => {
-//             logger.info(`listen ${process.env.STUDENT_APP_PORT} port`)
-//         })
-//     }
-// })
-
-
-// STUDENT_APP_URL=https://hostelbackend-production-7cfd.up.railway.app
-// STUDENT_APP_PORT=80
