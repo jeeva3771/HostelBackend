@@ -105,6 +105,7 @@ const pageStudentSessionExclude = [
 app.use((req, res, next) => {
     console.log(pageWardenSessionExclude.includes(req.originalUrl))
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
+        console.log('ok next')
         return next()
     }
     
