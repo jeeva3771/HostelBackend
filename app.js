@@ -41,7 +41,6 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
 app.use(cookieParser())
 
-
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'https://hostelbackend-production-24da.up.railway.app'); // Allow frontend
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -55,7 +54,7 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
     credentials : true
 }
-app.use(cors(corsOptions))
+app.options('*', cors(corsOptions));
 
 app.use(session({ 
     store: sessionStore,
