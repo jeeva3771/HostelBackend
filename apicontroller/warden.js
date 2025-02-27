@@ -609,7 +609,10 @@ async function generateOtp(req, res) {
 async function processResetPassword(req, res) {
     const mysqlClient = req.app.mysqlClient;
     const emailId = req.session.resetPassword;
+    console.log(emailId, "emailid")
     const { password = null, otp = null } = req.body;
+        console.log(password, 'password;')
+
     const currentTime = new Date().getTime();
     const otpAttemptMax = 3;
 
