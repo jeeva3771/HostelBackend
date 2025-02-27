@@ -120,6 +120,7 @@ wardenApp.use((req, res, next) => {
     }
     
     if (req.originalUrl !== '/login') {
+        console.log(req.sessionID)
         if (req.session.isLogged !== true) {
             console.log('401')
 
