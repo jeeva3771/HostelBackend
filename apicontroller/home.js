@@ -1,6 +1,7 @@
 const { mysqlQuery } = require('../utilityclient/query');
 
 async function readBlockCount(req, res) {
+    console.log(req.session)
     const mysqlClient = req.app.mysqlClient;
     try {
         const getBlockCount = await mysqlQuery(/*sql*/`
