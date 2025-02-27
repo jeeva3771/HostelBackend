@@ -45,7 +45,7 @@ const corsOptions = {
     origin: function (origin, callback) {
         const allowedOrigins = [
             'https://hostelbackend-production-24da.up.railway.app',
-            'http://localhost:3000'
+            'https://yellowgreen-crow-110465.hostingersite.com/'
         ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
