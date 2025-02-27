@@ -1,3 +1,6 @@
+
+
+
 const dotenv = require('dotenv')
 const express = require('express')
 const mysql = require('mysql2')
@@ -9,7 +12,6 @@ const session = require('express-session')
 const cors = require('cors')
 const MySQLStore = require('express-mysql-session')(session)
 const { v4: uuidv4 } = require('uuid')
-const app = express()
 
 dotenv.config({ path: `env/${process.env.NODE_ENV}.env` })
 
@@ -37,58 +39,64 @@ const dbOptions = {
 
 const sessionStore = new MySQLStore(dbOptions)
 
-app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.json())
-app.use(cookieParser())
-  
-const corsOptions = {
-    origin: ['https://hostelbackend-production-24da.up.railway.app', 'http://localhost:3000' ],  // Allow specific origin 
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials : true
-}
-app.use(cors(corsOptions))
+function setupApplication(app) {
+    app.use(express.static(path.join(__dirname, 'public')))
+    app.use(express.json())
+    app.use(cookieParser())
 
-app.use(session({ 
-    store: sessionStore,
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24,  
-        secure: true,
-        httpOnly: true
+    const corsOptions = {
+        origin: 'https://hostelfrontend-production.up.railway.app/',  // Allow specific origin 
+        methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
+        credentials : true
     }
-}))
+    app.use(cors(corsOptions))
 
-app.use(
-    pinoHttp({
-        logger,
-        customLogLevel: (res, err) => (res.statusCode >= 500 ? 'error' : 'info'),
-        customSuccessMessage: (req, res) => `Request to ${req.url} processed`,
-        genReqId: (req) => {
-            req.startTime = Date.now();
-            return req.id || uuidv4();
-        },
-        customAttributeKeys: {
-            reqId: 'requestId',
-        },
+    app.use(session({ 
+        store: sessionStore,
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24,  
+            secure: false
+        }
+    }))
+
+    app.use(
+        pinoHttp({
+            logger,
+            customLogLevel: (res, err) => (res.statusCode >= 500 ? 'error' : 'info'),
+            customSuccessMessage: (req, res) => `Request to ${req.url} processed`,
+            genReqId: (req) => {
+                req.startTime = Date.now();
+                return req.id || uuidv4();
+            },
+            customAttributeKeys: {
+                reqId: 'requestId',
+            },
+        })
+    )
+    
+    // Middleware to log the total process time
+    app.use((req, res, next) => {
+        res.on('finish', () => {
+            const processTime = Date.now() - req.startTime
+            req.log.info({ processTime }, `Request processed in ${processTime}ms`)
+        })
+        next()
     })
-)
+    
+    app.set('view engine', 'ejs')
+    app.set('views', path.join(__dirname, '/uicontroller/views'))
 
+    app.mysqlClient = mysql.createConnection(dbOptions)    
+}
 
-// Middleware to log the total process time
-app.use((req, res, next) => {
-    res.on('finish', () => {
-        const processTime = Date.now() - req.startTime
-        req.log.info({ processTime }, `Request processed in ${processTime}ms`)
-    })
-    next()
-})
+// const studentApp = express()
+const wardenApp = express()
 
-app.set('view engine', 'ejs')
-app.set('views', path.join(__dirname, '/uicontroller/views'))
-
-app.mysqlClient = mysql.createConnection(dbOptions)    
+setupApplication(wardenApp)
+// setupApplication(studentApp)
 
 const pageWardenSessionExclude = [
     '/login/',
@@ -100,65 +108,75 @@ const pageWardenSessionExclude = [
 
 const pageStudentSessionExclude = [
     '/student/login/',
-    '/student/api/student/generateotp/',
-    '/student/api/student/verifyotp/authentication/'
+    '/api/student/generateotp/?emailId',
+    '/api/student/verifyotp/authentication/'
 ]
 
-const studentUrls = [
-    '/student/api/student/name',
-    '/student/api/student/image',
-    '/student/api/student/deleteimage',
-    '/student/api/student/attendancereport',
-    '/student/api/student/logout',
-    '/student/api/student/editimage'
-]
-
-app.use((req, res, next) => {
+// only works for warden
+wardenApp.use((req, res, next) => {
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
+        console.log(req.originalUrl, 'exclude' )
         return next()
     }
-
+    
     if (req.originalUrl !== '/login') {
         if (req.session.isLogged !== true) {
-            console.log('Session ID:', req.sessionID);
+            console.log('401')
+
             return res.status(401).send('Session expired.')
         }
     }
     return next()
 })
 
-app.use((req, res, next) => {
-    if (pageStudentSessionExclude.includes(req.originalUrl)) {
-        return next()
-    }
-
-    if (req.originalUrl !== '/student/login') {
-        if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
-            return res.status(401).send('Session expired.');
-        }
-    }
-    
-    return next()
-})
-
-app.mysqlClient.connect(function (err) {
+wardenApp.mysqlClient.connect(function (err) {
     if (err) {
         console.error(err)
     } else {
         console.log('mysql connected')
 
-        course(app)
-        block(app)
-        warden(app)
-        blockFloor(app)
-        room(app)
-        student(app)
-        attendance(app)
-        home(app)
-        studentUse(app)
+        course(wardenApp)
+        block(wardenApp)
+        warden(wardenApp)
+        blockFloor(wardenApp)
+        room(wardenApp)
+        student(wardenApp)
+        attendance(wardenApp)
+        home(wardenApp)
 
-        app.listen(process.env.APP_PORT, () => {
+
+        wardenApp.listen(process.env.APP_PORT, () => {
             logger.info(`listen ${process.env.APP_PORT} port`)
         })
     }
 })
+
+// only works for student
+
+// studentApp.use((req, res, next) => {
+//     if (pageStudentSessionExclude.includes(req.originalUrl)) {
+//         return next()
+//     }
+//     if (req.originalUrl !== '/student/login/') {
+//         if (req.session.isLoggedStudent !== true) {
+//             return res.status(401).send('Session expired.')
+//         }
+//     }
+//     return next()
+// })
+
+// studentApp.mysqlClient.connect(function (err) {
+//     if (err) {
+//         console.error(err)
+//     } else {
+//         console.log('mysql connected')
+//         studentUse(studentApp)
+//         studentApp.listen(process.env.STUDENT_APP_PORT, () => {
+//             logger.info(`listen ${process.env.STUDENT_APP_PORT} port`)
+//         })
+//     }
+// })
+
+
+// STUDENT_APP_URL=https://hostelbackend-production-7cfd.up.railway.app
+// STUDENT_APP_PORT=80
