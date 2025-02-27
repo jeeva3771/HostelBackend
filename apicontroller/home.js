@@ -1,7 +1,6 @@
 const { mysqlQuery } = require('../utilityclient/query');
 
 async function readBlockCount(req, res) {
-    console.log(req.session)
     const mysqlClient = req.app.mysqlClient;
     try {
         const getBlockCount = await mysqlQuery(/*sql*/`
@@ -23,7 +22,6 @@ async function readBlockCount(req, res) {
 }
 
 async function readFloorCount(req, res) {
-    console.log(req.session)
     const mysqlClient = req.app.mysqlClient;
     try {
         const getFloorCount = await mysqlQuery(/*sql*/`
@@ -45,7 +43,6 @@ async function readFloorCount(req, res) {
 }
 
 async function readRoomCount(req, res) {
-    console.log(req.session)
     const mysqlClient = req.app.mysqlClient;
     try {
         const getRoomCount = await mysqlQuery(/*sql*/`
@@ -67,7 +64,6 @@ async function readRoomCount(req, res) {
 }
 
 async function readCourseCount(req, res) {
-    console.log(req.session)
     const mysqlClient = req.app.mysqlClient;
     try {
         const getCourseCount = await mysqlQuery(/*sql*/`
@@ -89,7 +85,6 @@ async function readCourseCount(req, res) {
 }
 
 async function readStudentCount(req, res) {
-    console.log(req.session)
     const mysqlClient = req.app.mysqlClient;
     try {
         const getStudentCount = await mysqlQuery(/*sql*/`
@@ -111,7 +106,6 @@ async function readStudentCount(req, res) {
 }
 
 async function readWardenCount(req, res) {
-    console.log(req.session)
     const mysqlClient = req.app.mysqlClient;
     try {
         const getWardenCount = await mysqlQuery(/*sql*/`
