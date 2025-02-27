@@ -42,17 +42,10 @@ app.use(express.json())
 app.use(cookieParser())
   
 const corsOptions = {
-    origin: function (origin, callback) {
-        const allowedOrigins = [
-            'https://hostelbackend-production-24da.up.railway.app',
-            'https://yellowgreen-crow-110465.hostingersite.com/'
-        ];
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin:  [
+        'https://hostelbackend-production-24da.up.railway.app',
+        'https://yellowgreen-crow-110465.hostingersite.com/'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials : true
 }
