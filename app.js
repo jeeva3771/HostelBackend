@@ -58,29 +58,18 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
-// app.use(session({ 
-//     store: sessionStore,
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//         maxAge: 1000 * 60 * 60 * 24,  
-//         secure: true,
-//         httpOnly: true
-//     }
-// }))
-
 app.use(session({
-    secret: 'your-secret-key',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
+        maxAge: 1000 * 60 * 60 * 24,
         secure: false,
         httpOnly: true,
         sameSite: 'None'
     }
-}));
+}))
 
 app.use(
     pinoHttp({
