@@ -608,7 +608,9 @@ async function generateOtp(req, res) {
 
 async function processResetPassword(req, res) {
     const mysqlClient = req.app.mysqlClient;
-    const emailId = req.session.resetPassword;
+    // const emailId = req.session.resetPassword;
+    const emailId ="jeeva37710@gmail.com"
+
     console.log(emailId, "emailid")
     const { password = null, otp = null } = req.body;
         console.log(password, 'password;')
