@@ -44,8 +44,7 @@ app.use(cookieParser())
 const corsOptions = {
     origin:  [
         'https://hostelbackend-production-24da.up.railway.app',
-        // 'https://yellowgreen-crow-110465.hostingersite.com/',
-       'http://localhost:3000'
+        'https://yellowgreen-crow-110465.hostingersite.com/'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials : true
