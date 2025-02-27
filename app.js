@@ -48,17 +48,29 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
-app.use(session({ 
-    store: sessionStore,
-    secret: process.env.SESSION_SECRET,
+// app.use(session({ 
+//     store: sessionStore,
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//         maxAge: 1000 * 60 * 60 * 24,  
+//         secure: true,
+//         httpOnly: true
+//     }
+// }))
+
+app.use(session({
+    secret: 'your-secret-key',
     resave: false,
     saveUninitialized: false,
+    store: sessionStore,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24,  
-        secure: true,
-        httpOnly: true
+        secure: false,
+        httpOnly: true,
+        sameSite: 'None'
     }
-}))
+}));
 
 app.use(
     pinoHttp({
@@ -119,7 +131,10 @@ app.use((req, res, next) => {
     }
 
     if (req.originalUrl !== '/login') {
+        console.log(req.session)
+
         if (req.session.isLogged !== true) {
+            
             console.log('Session ID:', req.sessionID);
             return res.status(401).send('Session expired.')
         }
