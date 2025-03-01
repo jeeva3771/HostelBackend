@@ -54,17 +54,15 @@ app.use(session({
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
+        // maxAge: 1000 * 60 * 60 * 24,
+        // secure: false,
+        // httpOnly: true
         maxAge: 1000 * 60 * 60 * 24,
-        secure: false,
-        httpOnly: true
+        secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     }
 }))
-
-app.use((req, res, next) => {
-    console.log('Session ID:', req.sessionID);
-    console.log('Session Data:', req.session);
-    next();
-});
 
 app.use(
     pinoHttp({
