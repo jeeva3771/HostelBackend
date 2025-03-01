@@ -45,8 +45,6 @@ const corsOptions = {
     origin: 'https://yellowgreen-crow-110465.hostingersite.com',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials : true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['set-cookie']
 }
 app.use(cors(corsOptions))
 
