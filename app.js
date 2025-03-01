@@ -32,9 +32,7 @@ const dbOptions = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    checkExpirationInterval: 900000, // 15 minutes
-  expiration: 86400000, // 1 day
+    database: process.env.DB_NAME
 }
 
 const sessionStore = new MySQLStore(dbOptions)
@@ -57,10 +55,16 @@ app.use(session({
     store: sessionStore,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24,
-        secure: true,
+        secure: false,
         httpOnly: true
     }
 }))
+
+app.use((req, res, next) => {
+    console.log('Session ID:', req.sessionID);
+    console.log('Session Data:', req.session);
+    next();
+});
 
 app.use(
     pinoHttp({
@@ -121,11 +125,7 @@ app.use((req, res, next) => {
     }
 
     if (req.originalUrl !== '/login') {
-        console.log(req.session)
-
         if (req.session.isLogged !== true) {
-            
-            console.log('Session ID:', req.sessionID);
             return res.status(401).send('Session expired.')
         }
     }
