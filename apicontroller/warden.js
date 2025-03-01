@@ -174,12 +174,6 @@ async function createWarden(req, res) {
         password,
         superAdmin
     } = req.body
-     console.log(firstName,
-        lastName,
-        dob,
-        emailId,
-        password,
-        superAdmin, 'ppppppppppppppp')
     const createdBy = req.session.warden.wardenId;
 
     try {
@@ -225,7 +219,6 @@ async function createWarden(req, res) {
         }
         res.status(201).send('Insert successfully')
     } catch (error) {
-        console.log(error)
         req.log.error(error)
         res.status(500).send(error.message)
     }
@@ -412,7 +405,6 @@ async function authentication(req, res) {
             res.status(400).send('Invalid Password.')
         }
     } catch (error) {
-        console.log(error)
         req.log.error(error)
         res.status(500).send(error.message)
     }
@@ -486,7 +478,6 @@ async function editUserWarden(req, res) {
             data: getUpdatedWarden[0]
         })
     } catch (error) {
-        console.log(error)
         req.log.error(error)
         res.status(500).send(error.message)
     }
@@ -610,7 +601,6 @@ async function generateOtp(req, res) {
 async function processResetPassword(req, res) {
     const mysqlClient = req.app.mysqlClient;
     const emailId = req.session.resetPassword;
-    console.log(emailId, "emailid")
     const { password = null, otp = null } = req.body;
     const currentTime = new Date().getTime();
     const otpAttemptMax = 3;
@@ -717,7 +707,6 @@ async function validatePayload(req, body, isUpdate = false, wardenId = null, mys
     } = body
     
     if (isUpdate === false) {
-        console.log("password", password)
         if (password !== undefined) {
             if (password.length < 6) {
                 errors.push('Password is invalid')
@@ -750,7 +739,6 @@ async function validateMainPayload(body, isUpdate = false, wardenId, mysqlClient
         dob,
         emailId
     } = body
-    console.log()
     const errors = []
 
     if (firstName !== undefined) {
