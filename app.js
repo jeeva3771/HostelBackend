@@ -54,15 +54,18 @@ app.use(session({
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-        // maxAge: 1000 * 60 * 60 * 24,
-        // secure: false,
-        // httpOnly: true
         maxAge: 1000 * 60 * 60 * 24,
-        secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
-        httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        secure: false,
+        httpOnly: true
     }
 }))
+
+app.use((req, res, next) => {
+    res.on('finish', () => {
+        console.log('Set-Cookie Header:', res.getHeaders()['set-cookie']);
+    });
+    next();
+});
 
 app.use(
     pinoHttp({
