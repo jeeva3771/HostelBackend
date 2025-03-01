@@ -5,9 +5,9 @@ const pino = require('pino')
 const pinoHttp = require('pino-http')
 const path = require('path')
 const cookieParser = require('cookie-parser')
-// const session = require('express-session')
+const session = require('express-session')
 const cors = require('cors')
-// const MySQLStore = require('express-mysql-session')(session)
+const MySQLStore = require('express-mysql-session')(session)
 const { v4: uuidv4 } = require('uuid')
 const app = express()
 
@@ -35,7 +35,7 @@ const dbOptions = {
     database: process.env.DB_NAME
 }
 
-// const sessionStore = new MySQLStore(dbOptions)
+const sessionStore = new MySQLStore(dbOptions)
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
@@ -48,20 +48,17 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
-
-app.use(
-  session({
-    store: new FileStore({ path: './sessions', retries: 0 }),
+app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 86400000 }, // 1 day
-  })
-);
-
-
+    store: sessionStore,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24,
+        secure: false,
+        httpOnly: true
+    }
+}))
 
 app.use(
     pinoHttp({
