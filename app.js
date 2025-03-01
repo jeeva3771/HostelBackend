@@ -44,7 +44,9 @@ app.use(cookieParser())
 const corsOptions = {
     origin: 'https://yellowgreen-crow-110465.hostingersite.com',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials : true
+    credentials : true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['set-cookie']
 }
 app.use(cors(corsOptions))
 
@@ -60,17 +62,17 @@ app.use(session({
     }
 }))
 
-app.use((req, res, next) => {
-    res.on('finish', () => {
-        console.log('Set-Cookie Header:', res.getHeaders()['set-cookie']);
-    });
-    next();
-});
+// app.use((req, res, next) => {
+//     res.on('finish', () => {
+//         console.log('Set-Cookie Header:', res.getHeaders()['set-cookie']);
+//     });
+//     next();
+// });
 
-app.use((req, res, next) => {
-    res.cookie('testCookie', 'value', { httpOnly: true });
-    next();
-});
+// app.use((req, res, next) => {
+//     res.cookie('testCookie', 'value', { httpOnly: true });
+//     next();
+// });
 
 app.use(
     pinoHttp({
