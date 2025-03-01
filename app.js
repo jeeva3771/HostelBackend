@@ -32,7 +32,9 @@ const dbOptions = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    checkExpirationInterval: 900000, // 15 minutes
+  expiration: 86400000, // 1 day
 }
 
 const sessionStore = new MySQLStore(dbOptions)
@@ -55,7 +57,7 @@ app.use(session({
     store: sessionStore,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24,
-        secure: false,
+        secure: true,
         httpOnly: true
     }
 }))
