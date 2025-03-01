@@ -5,9 +5,9 @@ const pino = require('pino')
 const pinoHttp = require('pino-http')
 const path = require('path')
 const cookieParser = require('cookie-parser')
-const session = require('express-session')
+// const session = require('express-session')
 const cors = require('cors')
-const MySQLStore = require('express-mysql-session')(session)
+// const MySQLStore = require('express-mysql-session')(session)
 const { v4: uuidv4 } = require('uuid')
 const app = express()
 
@@ -32,13 +32,10 @@ const dbOptions = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    clearExpired: true,
-    checkExpirationInterval: 900000, // 15 min
-    expiration: 86400000, // 1 day
+    database: process.env.DB_NAME
 }
 
-const sessionStore = new MySQLStore(dbOptions)
+// const sessionStore = new MySQLStore(dbOptions)
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
@@ -51,27 +48,20 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
-// app.use(session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//     store: sessionStore,
-//     cookie: {
-//         maxAge: 1000 * 60 * 60 * 24,
-//         secure: false,
-//         httpOnly: true
-//     }
-// }))
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 app.use(
-    session({
-      store: sessionStore,
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      cookie: { secure: false, maxAge: 86400000 },
-    })
-  );
+  session({
+    store: new FileStore({ path: './sessions', retries: 0 }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 86400000 }, // 1 day
+  })
+);
+
+
 
 app.use(
     pinoHttp({
@@ -177,4 +167,4 @@ app.mysqlClient.connect(function (err) {
             logger.info(`listen ${process.env.APP_PORT} port`)
         })
     }
-})
+})  
