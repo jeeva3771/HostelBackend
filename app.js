@@ -42,7 +42,7 @@ app.use(express.json())
 app.use(cookieParser())
   
 const corsOptions = {
-    origin: 'https://yellowgreen-crow-110465.hostingersite.com/',
+    origin: 'https://yellowgreen-crow-110465.hostingersite.com',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials : true
 }
