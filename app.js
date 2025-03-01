@@ -67,6 +67,11 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use((req, res, next) => {
+    res.cookie('testCookie', 'value', { httpOnly: true });
+    next();
+});
+
 app.use(
     pinoHttp({
         logger,
