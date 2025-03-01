@@ -32,7 +32,10 @@ const dbOptions = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    clearExpired: true,
+    checkExpirationInterval: 900000, // 15 min
+    expiration: 86400000, // 1 day
 }
 
 const sessionStore = new MySQLStore(dbOptions)
@@ -48,17 +51,27 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: sessionStore,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24,
-        secure: false,
-        httpOnly: true
-    }
-}))
+// app.use(session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     store: sessionStore,
+//     cookie: {
+//         maxAge: 1000 * 60 * 60 * 24,
+//         secure: false,
+//         httpOnly: true
+//     }
+// }))
+
+app.use(
+    session({
+      store: sessionStore,
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: { secure: false, maxAge: 86400000 },
+    })
+  );
 
 app.use(
     pinoHttp({
