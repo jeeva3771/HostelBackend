@@ -6,11 +6,8 @@ const pinoHttp = require('pino-http')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const RedisStore = require('connect-redis').default
-const { createClient } = require('redis')
-
 const cors = require('cors')
-// const MySQLStore = require('express-mysql-session')(session)
+const MySQLStore = require('express-mysql-session')(session)
 const { v4: uuidv4 } = require('uuid')
 const app = express()
 
@@ -27,13 +24,6 @@ const attendance = require('./apicontroller/attendance.js')
 const studentUse = require('./apicontroller/studentuse.js')
 const home = require('./apicontroller/home.js')
 
-const redisClient = createClient({
-    url: process.env.REDIS_URL || 'redis://default:yourpassword@yourredisurl:6379'
-});
-
-redisClient.connect().catch(console.error);
-
-
 const logger = pino({
     level: 'info'
 })
@@ -45,7 +35,7 @@ const dbOptions = {
     database: process.env.DB_NAME
 }
 
-// const sessionStore = new MySQLStore(dbOptions)
+const sessionStore = new MySQLStore(dbOptions)
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
@@ -62,10 +52,10 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: new RedisStore({ client: redisClient }),
+    store: sessionStore,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24,
-        secure: true,
+        secure: false,
         httpOnly: true
     }
 }))
