@@ -28,7 +28,7 @@ async function readFloorCount(req, res) {
             SELECT 
                 COUNT(*) AS totalFloorCount 
             FROM 
-                blockFloor
+                blockfloor
             WHERE 
                 deletedAt IS NULL`, [], mysqlClient)
 
@@ -37,7 +37,7 @@ async function readFloorCount(req, res) {
         }
         res.status(200).send(getFloorCount[0])
     } catch (error) {
-        req.log.error(error);
+        req.log.error(error)
         res.status(500).send(error.message)
     }
 }

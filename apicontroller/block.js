@@ -183,7 +183,7 @@ async function createBlock(req, res) {
             return res.status(400).send(isValidInsert)
         }
 
-        const newBlock = await mysqlQuery(/*sql*/`INSERT INTO BLOCK(blockCode, blockLocation, isActive, createdBy) VALUES(?,?,?,?)`,
+        const newBlock = await mysqlQuery(/*sql*/`INSERT INTO block(blockCode, blockLocation, isActive, createdBy) VALUES(?,?,?,?)`,
             [blockCode, blockLocation, isActive, createdBy], mysqlClient)
 
         if (newBlock.affectedRows === 0) {
@@ -192,6 +192,7 @@ async function createBlock(req, res) {
             res.status(201).send('Insert successfully')
         }
     } catch (error) {
+        console.log(error)
         req.log.error(error);
         res.status(500).send(error.message)
     }

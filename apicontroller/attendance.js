@@ -33,7 +33,7 @@ async function readAttendances(req, res) {
         LEFT JOIN 
             block AS bk ON bk.blockId = a.blockId
         WHERE
-            (s.name LIKE ? OR S2.registerNumber LIKE ? OR bk.blockCode LIKE ? OR b.floorNumber LIKE ?
+            (s.name LIKE ? OR s2.registerNumber LIKE ? OR bk.blockCode LIKE ? OR b.floorNumber LIKE ?
             OR r.roomNumber LIKE ? OR a.isPresent LIKE ?)
         ORDER BY 
             ${orderBy} ${sort}`;
@@ -53,7 +53,7 @@ async function readAttendances(req, res) {
         LEFT JOIN 
             block AS bk ON bk.blockId = a.blockId
         WHERE
-            (s.name LIKE ? OR S2.registerNumber LIKE ? OR bk.blockCode LIKE ? OR b.floorNumber LIKE ?
+            (s.name LIKE ? OR s2.registerNumber LIKE ? OR bk.blockCode LIKE ? OR b.floorNumber LIKE ?
             OR r.roomNumber LIKE ? OR a.isPresent LIKE ?)
         ORDER BY 
             ${orderBy} ${sort}`;

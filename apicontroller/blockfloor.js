@@ -158,7 +158,9 @@ async function createBlockFloor(req, res) {
     }
 
     try {
-        const newBlockFloor = await mysqlQuery(/*sql*/`INSERT INTO blockfloor (blockId,floorNumber,isActive,createdBy)
+        const newBlockFloor = await mysqlQuery(/*sql*/`
+            INSERT INTO blockfloor 
+                (blockId,floorNumber,isActive,createdBy)
             VALUES(?,?,?,?)`,
             [blockId, floorNumber, isActive, createdBy],
             mysqlClient
@@ -169,6 +171,7 @@ async function createBlockFloor(req, res) {
             res.status(201).send('insert successfully')
         }
     } catch (error) {
+        console.log(error)
         req.log.error(error)
         res.status(500).send(error.message)
     }
@@ -318,7 +321,7 @@ async function validatePayload(body, isUpdate = false, blockFloorId = null, mysq
                     SELECT 
                         COUNT(*) AS count 
                     FROM 
-                        blockFloor 
+                        blockfloor 
                     WHERE 
                           blockId = ? AND 
                           floorNumber = ? AND 
@@ -331,7 +334,7 @@ async function validatePayload(body, isUpdate = false, blockFloorId = null, mysq
                     SELECT 
                         COUNT(*) AS count
                     FROM
-                        blockFloor 
+                        blockfloor 
                     WHERE 
                         blockId = ? AND 
                         floorNumber = ? AND 
