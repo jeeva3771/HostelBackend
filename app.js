@@ -82,11 +82,8 @@ function setupApplication(app) {
     })    
 }
 
-// const studentApp = express()
 const app = express()
-
 setupApplication(app)
-// setupApplication(studentApp)
 
 const pageWardenSessionExclude = [
     '/login/',
@@ -118,7 +115,7 @@ app.use((req, res, next) => {
     
     if (req.originalUrl !== '/login') {
         if (req.session.isLogged !== true) {
-            return res.status(401).redirect(getAppUrl('login'))
+            return res.status(401).send('Session expired.')
         }
     }
     return next()
@@ -131,7 +128,7 @@ app.use((req, res, next) => {
 
     if (req.originalUrl !== '/student/login') {
         if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
-            return res.status(401).send('Session expired.');
+            return res.status(401).send('Session expired.')
         }
     }
     
