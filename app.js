@@ -5,8 +5,8 @@ const pino = require('pino');
 const pinoHttp = require('pino-http');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
+// const session = require('express-session');
+// const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 
@@ -39,18 +39,26 @@ function setupApplication(app) {
     }
     app.use(cors(corsOptions));
 
-    app.use(session({ 
-        store: new FileStore({}),
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            maxAge: 1000 * 60 *60 * 24,
-            secure: true,  // Set to false if not using HTTPS
-            httpOnly: true,
-            sameSite: "none"
-        }
-    }))
+    // app.use(session({ 
+    //     store: new FileStore({}),
+    //     secret: process.env.SESSION_SECRET,
+    //     resave: false,
+    //     saveUninitialized: false,
+    //     cookie: {
+    //         maxAge: 1000 * 60 *60 * 24,
+    //         secure: true,  // Set to false if not using HTTPS
+    //         httpOnly: true,
+    //         sameSite: "none"
+    //     }
+    // }))
+
+    var RedisStore = require('connect-redis')(express);
+
+// add this to your app.configure
+app.use(express.session({
+  secret: "kqsdjfmlksdhfhzirzeoibrzecrbzuzefcuercazeafxzeokwdfzeijfxcerig",
+  store: new RedisStore({ host: 'localhost', port: 3000, client: redis })
+}));
     
     app.use(
         pinoHttp({
@@ -133,7 +141,6 @@ app.use((req, res, next) => {
             return res.status(401).send('Session expired.')
         }
     }
-    
     return next()
 })
 
