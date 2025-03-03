@@ -5,8 +5,8 @@ const pino = require('pino');
 const pinoHttp = require('pino-http');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-// const session = require('express-session');
-// const FileStore = require('session-file-store')(session);
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 
@@ -39,46 +39,18 @@ function setupApplication(app) {
     }
     app.use(cors(corsOptions));
 
-    // app.use(session({ 
-    //     store: new FileStore({}),
-    //     secret: process.env.SESSION_SECRET,
-    //     resave: false,
-    //     saveUninitialized: false,
-    //     cookie: {
-    //         maxAge: 1000 * 60 *60 * 24,
-    //         secure: false,
-    //     }
-    // }));
-
-
-    const session = require("express-session");
-    const { RedisStore } = require("connect-redis");
-    const Redis = require("ioredis");
-
-    const redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
-
-redisClient.on("connect", () => {
-    console.log("Connected to Redis successfully!");
-});
-
-redisClient.on("error", (err) => {
-    console.error("Redis connection error:", err);
-});
-    
-    // Connect to Redis
-    
-    app.use(session({
-        store: new RedisStore({ client: redisClient }),  // ✅ Fixes the constructor issue
-        secret: process.env.SESSION_SECRET || "your-secret-key",
+    app.use(session({ 
+        store: new FileStore({}),
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
+            maxAge: 1000 * 60 *60 * 24,
             secure: true,  // Set to false if not using HTTPS
             httpOnly: true,
             sameSite: "none"
         }
-    }));
+    }))
     
     app.use(
         pinoHttp({
