@@ -5,8 +5,8 @@ const pino = require('pino');
 const pinoHttp = require('pino-http');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-// const session = require('express-session');
-// const FileStore = require('session-file-store')(session);
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 
@@ -39,43 +39,19 @@ function setupApplication(app) {
     }
     app.use(cors(corsOptions));
 
-    // app.use(session({ 
-    //     store: new FileStore({}),
-    //     secret: process.env.SESSION_SECRET,
-    //     resave: false,
-    //     saveUninitialized: false,
-    //     cookie: {
-    //         maxAge: 1000 * 60 *60 * 24,
-    //         secure: true,  // Set to false if not using HTTPS
-    //         httpOnly: true,
-    //         sameSite: "none"
-    //     }
-    // }))
+    app.use(session({ 
+        store: new FileStore({}),
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 *60 * 24,
+            secure: true,  // Set to false if not using HTTPS
+            httpOnly: true,
+            sameSite: "none"
+        }
+    }))
 
-    const session = require("express-session");
-const RedisStore = require("connect-redis").default; // Fix this line
-const { createClient } = require("redis");
-
-// Create Redis client
-const redisClient = createClient({
-  url: "redis://127.0.0.1:6379", // Change this if Redis is hosted elsewhere
-  legacyMode: true, // Required for older versions
-});
-
-redisClient.connect().catch(console.error);
-
-// Use Redis for session storage
-app.use(
-  session({
-    store: new RedisStore({ client: redisClient }),
-    secret: "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false }, // Set secure: true if using HTTPS
-  })
-);
-
-    
     app.use(
         pinoHttp({
             logger,
