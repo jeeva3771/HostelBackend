@@ -5,7 +5,7 @@ const pino = require('pino');
 const pinoHttp = require('pino-http');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
+// const session = require('express-session');
 // const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
@@ -50,8 +50,11 @@ function setupApplication(app) {
     //     }
     // }));
 
-    const RedisStore = require("connect-redis")(session);
+
+    const session = require("express-session");
+const RedisStore = require("connect-redis").default;
 const Redis = require("ioredis");
+
 const redisClient = new Redis(process.env.REDIS_URL);
 
 app.use(session({
