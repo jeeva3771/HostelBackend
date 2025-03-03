@@ -55,6 +55,19 @@ function setupApplication(app) {
     var RedisStore = require('connect-redis')(express);
 
 // add this to your app.configure
+function restrict(req, res, next) {
+    if (req.session.user) {
+      next();
+    } else {
+      req.session.error = 'Access denied!';
+      res.redirect('/login');
+    }
+  }
+  
+  app.get('/restricted', restrict, function(req, res){
+    res.send('Wahoo! restricted area, click to <a href="/logout">logout</a>');
+  });
+  
 app.use(express.session({
   secret: "kqsdjfmlksdhfhzirzeoibrzecrbzuzefcuercazeafxzeokwdfzeijfxcerig",
   store: new RedisStore({ host: 'localhost', port: 3000, client: redis })
