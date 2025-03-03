@@ -52,26 +52,29 @@ function setupApplication(app) {
     //     }
     // }))
 
-    var RedisStore = require('connect-redis')(express);
+    const session = require("express-session");
+const RedisStore = require("connect-redis").default; // Fix this line
+const { createClient } = require("redis");
 
-// add this to your app.configure
-function restrict(req, res, next) {
-    if (req.session.user) {
-      next();
-    } else {
-      req.session.error = 'Access denied!';
-      res.redirect('/login');
-    }
-  }
-  
-  app.get('/restricted', restrict, function(req, res){
-    res.send('Wahoo! restricted area, click to <a href="/logout">logout</a>');
-  });
-  
-app.use(express.session({
-  secret: "kqsdjfmlksdhfhzirzeoibrzecrbzuzefcuercazeafxzeokwdfzeijfxcerig",
-  store: new RedisStore({ host: 'localhost', port: 3000, client: redis })
-}));
+// Create Redis client
+const redisClient = createClient({
+  url: "redis://127.0.0.1:6379", // Change this if Redis is hosted elsewhere
+  legacyMode: true, // Required for older versions
+});
+
+redisClient.connect().catch(console.error);
+
+// Use Redis for session storage
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }, // Set secure: true if using HTTPS
+  })
+);
+
     
     app.use(
         pinoHttp({
