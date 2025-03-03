@@ -54,9 +54,18 @@ function setupApplication(app) {
     const session = require("express-session");
     const { RedisStore } = require("connect-redis");
     const Redis = require("ioredis");
+
+    const redisClient = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+
+redisClient.on("connect", () => {
+    console.log("Connected to Redis successfully!");
+});
+
+redisClient.on("error", (err) => {
+    console.error("Redis connection error:", err);
+});
     
     // Connect to Redis
-    const redisClient = new Redis(process.env.REDIS_URL);
     
     app.use(session({
         store: new RedisStore({ client: redisClient }),  // ✅ Fixes the constructor issue
