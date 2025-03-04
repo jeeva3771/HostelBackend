@@ -100,6 +100,7 @@ const pageStudentSessionExclude = [
     '/student/api/student/generateotp/',
     '/student/api/student/verifyotp/authentication/'
 ]
+https://hostel-production.up.railway.app/student/api/student/generateotp/
 
 const studentUrls = [
     '/student/api/student/name',
@@ -112,12 +113,13 @@ const studentUrls = [
 
 app.use((req, res, next) => {
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
-        console.log('sssssss')
+        console.log('warden nxt')
         return next()
     }
     
     if (req.originalUrl !== '/login') {
         if (req.session.isLogged !== true) {
+            console.log('wa ses')
             return res.status(401).send('Session expired.')
         }
     }
@@ -126,11 +128,13 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     if (pageStudentSessionExclude.includes(req.originalUrl)) {
+        console.log('student nxt')
         return next()
     }
 
     if (req.originalUrl !== '/student/login') {
         if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
+            console.log('stu ses')
             return res.status(401).send('Session expired.')
         }
     }
