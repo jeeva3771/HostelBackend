@@ -53,7 +53,15 @@ app.use(session({
         sameSite: "none"
     }
 }))
-
+app.get('/set-cookie-test', (req, res) => {
+    res.cookie('testCookie', 'testValue', { 
+        maxAge: 60000, 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: "none" 
+    });
+    res.send('Test cookie set');
+});
 app.use(
     pinoHttp({
         logger,
