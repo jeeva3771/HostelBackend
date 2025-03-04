@@ -37,7 +37,8 @@ const corsOptions = {
     // origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
     credentials : true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Set-Cookie']
 }
 app.use(cors(corsOptions));
 
