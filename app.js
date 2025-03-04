@@ -113,7 +113,7 @@ const studentUrls = [
 ]
 
 app.use((req, res, next) => {
-    if (req.originalUrl === '/login')
+    if (req.originalUrl === '/api/login')
         app.use((req, res, next) => {
             console.log("Session Data1111111111:", req.session);
             next();
