@@ -53,11 +53,6 @@ app.use(session({
     }
 }))
 
-
-app.use((req, res, next) => {
-    console.log("Session Data:", req.session);
-    next();
-})
 app.use(
     pinoHttp({
         logger,
@@ -113,11 +108,6 @@ const studentUrls = [
 ]
 
 app.use((req, res, next) => {
-    if (req.originalUrl === '/api/login')
-        app.use((req, res, next) => {
-            console.log("Session Data1111111111:", req.session);
-            next();
-        }); 
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
         return next()
     }
