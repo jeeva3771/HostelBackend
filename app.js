@@ -28,15 +28,16 @@ const logger = pino({
     level: 'info'
 });
 
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json())
 app.use(cookieParser());
 
 const corsOptions = {
-    origin: 'https://yellowgreen-crow-110465.hostingersite.com', //http://localhost:3000 Allow specific origin
+    origin: 'https://yellowgreen-crow-110465.hostingersite.com',
+    // origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
-    credentials : true
+    credentials : true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }
 app.use(cors(corsOptions));
 
