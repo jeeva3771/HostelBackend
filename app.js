@@ -117,7 +117,7 @@ app.use((req, res, next) => {
     }
     
     if (req.originalUrl !== '/login') {
-        if (req.session.isLogged !== true) {
+        if (req.session.isLogged !== true && (!pageStudentSessionExclude.includes(req.originalUrl))) {
             console.log('wa ses')
             return res.status(401).send('Session expired.')
         }
