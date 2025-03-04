@@ -112,13 +112,11 @@ const studentUrls = [
 
 app.use((req, res, next) => {
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
-        console.log('warden nxt')
         return next()
     }
     
     if (req.originalUrl !== '/login') {
         if (req.session.isLogged !== true && (!pageStudentSessionExclude.includes(req.originalUrl))) {
-            console.log('wa ses')
             return res.status(401).send('Session expired.')
         }
     }
@@ -127,13 +125,11 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     if (pageStudentSessionExclude.includes(req.originalUrl)) {
-        console.log('student nxt')
         return next()
     }
 
     if (req.originalUrl !== '/student/login') {
         if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
-            console.log('stu ses')
             return res.status(401).send('Session expired.')
         }
     }
