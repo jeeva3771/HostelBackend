@@ -52,12 +52,16 @@ app.use(session({
         sameSite: "none"
     }
 }))
+if (req.originalUrl === '/login')
+app.use((req, res, next) => {
+    console.log("Session Data1111111111:", req.session);
+    next();
+}); 
 
 app.use((req, res, next) => {
     console.log("Session Data:", req.session);
     next();
-});
-
+})
 app.use(
     pinoHttp({
         logger,
