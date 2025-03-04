@@ -112,6 +112,7 @@ const studentUrls = [
 
 app.use((req, res, next) => {
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
+        console.log('sssssss')
         return next()
     }
     
