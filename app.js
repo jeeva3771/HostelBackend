@@ -33,12 +33,10 @@ app.use(express.json())
 app.use(cookieParser());
 
 const corsOptions = {
-    origin: 'https://yellowgreen-crow-110465.hostingersite.com',
-    // origin: 'http://localhost:3000',
+    // origin: 'https://yellowgreen-crow-110465.hostingersite.com',
+    origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
     credentials : true,
-    // allowedHeaders: ['Content-Type', 'Authorization'],
-    // exposedHeaders: ['Set-Cookie']
 }
 app.use(cors(corsOptions));
 
@@ -49,9 +47,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 1000 * 60 *60 * 24,
-        secure: true,  // Set to false if not using HTTPS
-        httpOnly: true,
-        sameSite: "none"
+        secure: false,  // Set to false if not using HTTPS
+        // httpOnly: true,
+        // sameSite: "none"
     }
 }))
 
