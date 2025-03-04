@@ -54,15 +54,6 @@ app.use(session({
     }
 }))
 
-app.get('/set-cookie', (req, res) => {
-    res.cookie('testCookie', 'testValue', { 
-        maxAge: 60000, 
-        httpOnly: true, 
-        secure: true, 
-        sameSite: "none" 
-    });
-    res.send('Cookie set');
-});
 app.use(
     pinoHttp({
         logger,
