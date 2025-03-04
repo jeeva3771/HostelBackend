@@ -52,11 +52,7 @@ app.use(session({
         sameSite: "none"
     }
 }))
-if (req.originalUrl === '/login')
-app.use((req, res, next) => {
-    console.log("Session Data1111111111:", req.session);
-    next();
-}); 
+
 
 app.use((req, res, next) => {
     console.log("Session Data:", req.session);
@@ -117,6 +113,11 @@ const studentUrls = [
 ]
 
 app.use((req, res, next) => {
+    if (req.originalUrl === '/login')
+        app.use((req, res, next) => {
+            console.log("Session Data1111111111:", req.session);
+            next();
+        }); 
     if (pageWardenSessionExclude.includes(req.originalUrl)) {
         return next()
     }
