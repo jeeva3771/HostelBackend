@@ -100,7 +100,6 @@ const pageStudentSessionExclude = [
     '/student/api/student/generateotp/',
     '/student/api/student/verifyotp/authentication/'
 ]
-https://hostel-production.up.railway.app/student/api/student/generateotp/
 
 const studentUrls = [
     '/student/api/student/name',
