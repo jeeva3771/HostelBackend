@@ -58,7 +58,7 @@ app.get('/set-cookie', (req, res) => {
     res.cookie('testCookie', 'testValue', { 
         maxAge: 60000, 
         httpOnly: true, 
-        secure: process.env.NODE_ENV === 'production', 
+        secure: true, 
         sameSite: "none" 
     });
     res.send('Cookie set');
