@@ -106,31 +106,31 @@ const studentUrls = [
     '/student/api/student/editimage'
 ]
 
-app.use((req, res, next) => {
-    if (pageWardenSessionExclude.includes(req.originalUrl)) {
-        return next()
-    }
+// app.use((req, res, next) => {
+//     if (pageWardenSessionExclude.includes(req.originalUrl)) {
+//         return next()
+//     }
     
-    if (req.originalUrl !== '/login') {
-        if (req.session.isLogged !== true && (!pageStudentSessionExclude.includes(req.originalUrl))) {
-            return res.status(401).send('Session expired.')
-        }
-    }
-    return next()
-})
+//     if (req.originalUrl !== '/login') {
+//         if (req.session.isLogged !== true && (!pageStudentSessionExclude.includes(req.originalUrl))) {
+//             return res.status(401).send('Session expired.')
+//         }
+//     }
+//     return next()
+// })
 
-app.use((req, res, next) => {
-    if (pageStudentSessionExclude.includes(req.originalUrl)) {
-        return next()
-    }
+// app.use((req, res, next) => {
+//     if (pageStudentSessionExclude.includes(req.originalUrl)) {
+//         return next()
+//     }
 
-    if (req.originalUrl !== '/student/login') {
-        if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
-            return res.status(401).send('Session expired.')
-        }
-    }
-    return next()
-})
+//     if (req.originalUrl !== '/student/login') {
+//         if (studentUrls.includes(req.originalUrl) && req.session.isLoggedStudent !== true) {
+//             return res.status(401).send('Session expired.')
+//         }
+//     }
+//     return next()
+// })
 
 app.get('/test-cookie', (req, res) => {
     res.cookie('testCookie', 'hello', {
