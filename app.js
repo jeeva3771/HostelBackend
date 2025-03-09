@@ -10,7 +10,7 @@ const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 
-dotenv.config({ path: `env/${process.env.NODE_ENV}.env` });
+// dotenv.config({ path: `env/${process.env.NODE_ENV}.env` });
 
 //apicontroller
 const course = require('./apicontroller/course.js');
@@ -42,7 +42,7 @@ app.use(session({
     store: new FileStore({}),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
         maxAge: 1000 * 60 *60 * 24,
         secure: true,  // Set to false if not using HTTPS
