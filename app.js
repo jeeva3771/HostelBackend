@@ -45,7 +45,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 1000 * 60 *60 * 24,
-        secure: true,  // Set to false if not using HTTPS
+        secure: false,  // Set to false if not using HTTPS
         httpOnly: true,
         sameSite: "none",
         domain: '.yellowgreen-crow-110465.hostingersite.com',
