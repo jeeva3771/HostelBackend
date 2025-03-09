@@ -133,14 +133,7 @@ app.use((req, res, next) => {
     return next()
 })
 
-app.get('/test-cookie', (req, res) => {
-    res.cookie('testCookie', 'hello', {
-        httpOnly: true,
-        secure: true,   // Required for HTTPS
-        sameSite: 'None', // Needed for cross-origin requests
-    });
-    res.send('Cookie set');
-});
+
 app.mysqlClient.connect(function (err) {
     if (err) {
         console.error(err)
