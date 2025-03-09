@@ -48,7 +48,8 @@ app.use(session({
         secure: true,  // Set to false if not using HTTPS
         httpOnly: true,
         sameSite: "none",
-        domain: '.yellowgreen-crow-110465.hostingersite.com'
+        domain: '.yellowgreen-crow-110465.hostingersite.com',
+        path: '/',
     }
 }))
 
