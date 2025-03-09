@@ -48,7 +48,6 @@ app.use(session({
         secure: true,  // Set to false if not using HTTPS
         httpOnly: true,
         sameSite: "none",
-        domain: '.hostingersite.com',
         path: '/',
     }
 }))
