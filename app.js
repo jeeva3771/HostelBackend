@@ -4,7 +4,6 @@ const app = express();
 const mysql = require('mysql');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
@@ -51,6 +50,7 @@ app.use(session({
         sameSite: "none"
     }
 }))
+
 
 app.use(
     pinoHttp({
@@ -132,6 +132,14 @@ app.use((req, res, next) => {
     return next()
 })
 
+app.get('/test-cookie', (req, res) => {
+    res.cookie('testCookie', 'hello', {
+        httpOnly: true,
+        secure: true,   // Required for HTTPS
+        sameSite: 'None', // Needed for cross-origin requests
+    });
+    res.send('Cookie set');
+});
 app.mysqlClient.connect(function (err) {
     if (err) {
         console.error(err)
