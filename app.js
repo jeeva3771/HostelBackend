@@ -45,10 +45,10 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         maxAge: 1000 * 60 *60 * 24,
-        secure: true,  // Set to false if not using HTTPS
-        httpOnly: true,
-        sameSite: "none",
-        path: '/',
+        secure: false,  // Set to false if not using HTTPS
+        // httpOnly: true,
+        // sameSite: "none",
+        // path: '/',
     }
 }))
 
