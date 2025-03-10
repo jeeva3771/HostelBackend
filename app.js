@@ -38,34 +38,34 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
-// app.use(session({ 
-//     store: new FileStore({}),
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: {
-//         maxAge: 1000 * 60 *60 * 24,
-//         httpOnly: true,
-//         sameSite: "none",
-//         secure: false,  // Set to false if not using HTTPS
-//         // path: '/',
-//     }
-// }))
-
 app.use(session({ 
     store: new FileStore({}),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
-        secure: true, // Required for HTTPS
+        maxAge: 1000 * 60 *60 * 24,
         httpOnly: true,
-        sameSite: "None", // Allow cross-origin requests
-        domain: ".yellowgreen-crow-110465.hostingersite.com", // Use your domain
-        path: "/", // Ensure cookie applies to all paths
+        sameSite: "none",
+        secure: false,  // Set to false if not using HTTPS
+        // path: '/',
     }
-}));
+}))
+
+// app.use(session({ 
+//     store: new FileStore({}),
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//         maxAge: 1000 * 60 * 60 * 24, // 1 day
+//         secure: true, // Required for HTTPS
+//         httpOnly: true,
+//         sameSite: "None", // Allow cross-origin requests
+//         domain: ".yellowgreen-crow-110465.hostingersite.com", // Use your domain
+//         path: "/", // Ensure cookie applies to all paths
+//     }
+// }));
 
 app.use(
     pinoHttp({
