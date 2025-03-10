@@ -38,20 +38,34 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
+// app.use(session({ 
+//     store: new FileStore({}),
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: {
+//         maxAge: 1000 * 60 *60 * 24,
+//         httpOnly: true,
+//         sameSite: "none",
+//         secure: false,  // Set to false if not using HTTPS
+//         // path: '/',
+//     }
+// }))
+
 app.use(session({ 
     store: new FileStore({}),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-        maxAge: 1000 * 60 *60 * 24,
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+        secure: true, // Required for HTTPS
         httpOnly: true,
-        sameSite: "none",
-        secure: false,  // Set to false if not using HTTPS
-        // path: '/',
+        sameSite: "None", // Allow cross-origin requests
+        domain: ".yellowgreen-crow-110465.hostingersite.com", // Use your domain
+        path: "/", // Ensure cookie applies to all paths
     }
-}))
-
+}));
 
 app.use(
     pinoHttp({
@@ -74,6 +88,11 @@ app.use((req, res, next) => {
         const processTime = Date.now() - req.startTime;
         req.log.info({ processTime }, `Request processed in ${processTime}ms`);
     });
+    next();
+});
+
+app.use((req, res, next) => {
+    console.log("Session ID:", req.sessionID);
     next();
 });
 
